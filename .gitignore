@@ -3,3 +3,7 @@
 
 # Log files
 *.log
+log/*
+
+# Misc
+LP_SWAP.*
