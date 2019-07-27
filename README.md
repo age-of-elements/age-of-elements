@@ -1,5 +1,5 @@
 # age-of-elements
-Age of Elements is a game library that runs on the LDMud game driver.
+Age of Elements is an LPMud game library that runs on the LDMud game driver.
 
 The topdirectory contains these files and directories:
 
