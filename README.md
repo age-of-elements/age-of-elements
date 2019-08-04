@@ -14,8 +14,8 @@ The topdirectory contains these files and directories:
 * `room/` game rooms and include files
 * `sys/` include files, including those from the driver distribution
 
-## Getting Started on Amazon Linux 2
-* These instructions provide guidance on setting the up the game and a web site.
+## Getting Started on Amazon Web Services
+* These instructions provide guidance on setting the up the game and a web site on Amazon Linux 2.
 * _Warning: Amazon Web Services fees apply._
 ### Setup your Amazon Linux 2 Instance
 * [Create an AWS Account or Sign-in](https://aws.amazon.com/console/)
