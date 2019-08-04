@@ -15,7 +15,67 @@ The topdirectory contains these files and directories:
 * `sys/` include files, including those from the driver distribution
 
 ## Getting Started on Amazon Linux 2
-Amazon Web Services fees will apply.
+* These instructions provide guidance on setting the up the game and a web site.
+* _Warning: Amazon Web Services fees apply._
+### Setup your Amazon Linux 2 Instance
+* [Create an AWS Account or Sign-in](https://aws.amazon.com/console/)
+* [Launch a Amazon Linux 2 Instance](https://console.aws.amazon.com/ec2/v2/home?#LaunchInstanceWizard:)
+* _Size_, `t2.micro` for now. 
+* _Security Group_, Type: `SSH` Protocol: `TCP` Port Range: `22` Source: `Your IP` Description: `Developer Access`
+* _Security Group_, Type: `Custom TCP Rule` Protocol: `TCP` Port Range: `7680` Source: `Anywhere` Description: `TELNET to Game`
+* _Security Group_, Type: `Custom UDP Rule` Protocol: `UDP` Port Range: `7681` Source: `Anywhere` Description: `API to Game`
+* _Security Group_, Type: `HTTP` Protocol: `TCP` Port Range: `80` Source: `Anywhere` Description: `Web Server`
+* _Security Group_, Type: `HTTPS` Protocol: `TCP` Port Range: `443` Source: `Anywhere` Description: `Web Server`
+* [Connect with SSH to your instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
+```
+ssh -i <path to your key name>.pem ec2-user@<instance public ip>.compute-1.amazonaws.com
+```
+* [Install Apache, Mysql and PHP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html)
+```
+sudo yum update -y
+sudo amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
+sudo yum install -y httpd mariadb-server
+sudo systemctl start httpd
+sudo systemctl enable httpd
+sudo usermod -a -G apache ec2-user
+exit
+ssh -i <path to your key name>.pem ec2-user@<instance public ip>.compute-1.amazonaws.com
+groups
+sudo chown -R ec2-user:apache /var/www
+sudo chmod 2775 /var/www && find /var/www -type d -exec sudo chmod 2775 {} \;
+find /var/www -type f -exec sudo chmod 0664 {} \;
+```
+* [Configure SSL/TLS on Amazon Linux 2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html)
+```
+sudo yum install -y mod_ssl
+```
+* [Use HTTPS: Install an SSL Certificate from Let's Encrypt](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#letsencrypt)
+```
+sudo wget -r --no-parent -A 'epel-release-*.rpm' http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/
+sudo rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-*.rpm
+sudo yum-config-manager --enable epel*
+sudo nano /etc/httpd/conf/httpd.conf
+Locate the "listen 80" directive and add the following lines after it, replacing the example domain names with the actual Common Name and Subject Alternative Name (SAN).
+<VirtualHost *:80>
+    DocumentRoot "/var/www/html"
+    ServerName "example.com"
+    ServerAlias "www.example.com"
+</VirtualHost>
+sudo systemctl restart httpd
+sudo yum install -y certbot python2-certbot-apache
+sudo certbot
+```
+* [Test and Harden your SSL Server](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#ssl_test)
+```
+sudo nano /etc/httpd/conf.d/ssl.conf
+#SSLProtocol all -SSLv3
+SSLProtocol -SSLv2 -SSLv3 -TLSv1 -TLSv1.1 +TLSv1.2
+SSLHonorCipherOrder on
+sudo systemctl restart httpd
+sudo nano /etc/crontab
+39 1,13 * * * root certbot renew --no-self-upgrade
+sudo systemctl restart crond
+```
 ### Install LDMud Game Driver Dependencies
 Install the standard developer tools, then tools for mysql, json-c, XML2 and OpenSSL. 
 ```
