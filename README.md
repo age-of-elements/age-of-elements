@@ -33,7 +33,7 @@ git clone https://github.com/ldmud/ldmud.git
 cd ldmud
 rm -rf .git
 ./autogen.sh
-cd src/settings
+cd ~ldmud/src/settings
 ```
 ### Configure Your Game Driver Installation
 Use `nano` or `vi` to create a settings file called `aoe`.
@@ -66,6 +66,7 @@ with_udp_port=7681
 Set permissions with `chmod ug+rw aoe` and `chmod o+x aoe`.
 Run the configuration script, compile then install the game driver.
 ```
+cd ~/ldmud/src
 ./configure --prefix=/home/ec2-user/ldmud --libdir=/home/ec2-user/ldmud/age-of-elements --with-setting=aoe
 settings/aoe
 make
@@ -75,9 +76,10 @@ make install-all
 ### Install Age of Elements Mud Library
 Clone the mudlib 
 ```
+cd ~/ldmud
 git clone https://github.com/age-of-elements/age-of-elements.git
 ```
-Create a startup script in the `ldmud/bin` directory.
+Use `nano` or `vi` to create a startup script in the `~/ldmud/bin` directory called `startup`.
 ```perl
 ROOT=/home/ec2-user/ldmud
 GAME=`ps -ec | awk '/ ldmud$/ { print $1 }'`
@@ -115,7 +117,7 @@ fi
 ```
 Set permissions with `chmod ug+rw startup` and `chmod o+x startup`.
 ### Start the Game
-In the `ldmud/bin` directory start the game, then connect to the game.
+In the `~/ldmud/bin` directory start the game, then connect to the game.
 ```
 ./startup &
 telnet localhost 7680
