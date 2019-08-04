@@ -1,5 +1,6 @@
-# age-of-elements #
-Age of Elements is an LPMud game library that runs on the LDMud game driver.
+# Age of Elements #
+* Age of Elements is an LPMud game library that runs on the LDMud game driver.
+* Age of Elements in built up from the LPMud 2.4.5 game library that comes with the LDMud game driver.
 
 The topdirectory contains these files and directories:
 
@@ -14,10 +15,10 @@ The topdirectory contains these files and directories:
 * `room/` game rooms and include files
 * `sys/` include files, including those from the driver distribution
 
-## Getting Started on Amazon Web Services
+## Getting Started on Amazon Web Services ##
 * These instructions provide guidance on setting the up the game and a web site on Amazon Linux 2.
 * _Warning: Amazon Web Services fees apply._
-### Setup your Amazon Linux 2 Instance
+### Setup your Amazon Linux 2 Instance ###
 * [Create an AWS Account or Sign-in](https://aws.amazon.com/console/)
 * [Launch a Amazon Linux 2 Instance](https://console.aws.amazon.com/ec2/v2/home?#LaunchInstanceWizard:)
 * _Size_, `t2.micro` for now. 
@@ -30,6 +31,7 @@ The topdirectory contains these files and directories:
 ```
 ssh -i <path to your key name>.pem ec2-user@<instance public ip>.compute-1.amazonaws.com
 ```
+#### Configure the Web Site ####
 * [Install Apache, Mysql and PHP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html)
 ```
 sudo yum update -y
@@ -76,7 +78,50 @@ sudo nano /etc/crontab
 39 1,13 * * * root certbot renew --no-self-upgrade
 sudo systemctl restart crond
 ```
-### Install LDMud Game Driver Dependencies
+* [Secure the Database Server](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html)
+```
+sudo systemctl start mariadb
+sudo mysql_secure_installation
+```
+* [Install phpMyAdmin](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html)
+```
+sudo yum install php-mbstring -y
+sudo systemctl restart httpd
+sudo systemctl restart php-fpm
+cd /var/www/html
+wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
+mkdir phpMyAdmin && tar -xvzf phpMyAdmin-latest-all-languages.tar.gz -C phpMyAdmin --strip-components 1
+rm phpMyAdmin-latest-all-languages.tar.gz
+```
+* [Secure Your phpMyAdmin Installation](https://docs.phpmyadmin.net/en/latest/setup.html#securing-your-phpmyadmin-installation)
+* [Hosting a WordPress Blog](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hosting-wordpress.html)
+```
+cd ~/
+wget https://wordpress.org/latest.tar.gz
+tar -xzf latest.tar.gz
+mysql -u root -p
+CREATE USER 'wordpress-user' IDENTIFIED BY 'your_strong_password';
+Backticks used on purpose here.
+CREATE DATABASE `wordpress-db`;
+GRANT ALL PRIVILEGES ON `wordpress-db`.* TO "wordpress-user";
+FLUSH PRIVILEGES;
+exit
+cp wordpress/wp-config-sample.php wordpress/wp-config.php
+nano wordpress/wp-config.php
+https://api.wordpress.org/secret-key/1.1/salt/
+cp -r wordpress/* /var/www/html/
+sudo nano /etc/httpd/conf/httpd.conf
+AllowOverride All
+sudo chown -R apache:apache /var/www/html
+sudo service httpd restart
+```
+* Configure the web server and database to restart upon reboots
+```
+sudo systemctl enable httpd && sudo systemctl enable mariadb
+sudo systemctl status mariadb
+sudo systemctl status httpd
+```
+#### Install LDMud Game Driver Dependencies ####
 Install the standard developer tools, then tools for mysql, json-c, XML2 and OpenSSL. 
 ```
 sudo yum groupinstall "Development Tools"
@@ -85,7 +130,7 @@ sudo yum -y install json-c-devel
 sudo yum -y install libxml2-devel
 sudo yum -y install openssl-devel
 ```
-### Install LDMud Game Driver
+#### Install LDMud Game Driver ####
 Clone the game driver from the repository, detach it from source control, prep the game driver for the operating system.
 ```
 cd ~/
@@ -95,7 +140,7 @@ rm -rf .git
 ./autogen.sh
 cd ~/ldmud/src/settings
 ```
-### Configure Your Game Driver Installation
+#### Configure Your Game Driver Installation ####
 Use `nano` or `vi` to create a settings file called `aoe`.
 ```perl
 #!/bin/sh
@@ -133,7 +178,7 @@ make
 make install
 make install-all
 ```
-### Install Age of Elements Mud Library
+#### Install Age of Elements Mud Library ####
 Clone the mudlib 
 ```
 cd ~/ldmud
@@ -176,7 +221,7 @@ echo Game already running under PID $GAME
 fi
 ```
 Set permissions with `chmod ug+rw startup` and `chmod o+x startup`.
-### Start the Game
+#### Start the Game ####
 In the `~/ldmud/bin`, find the driver binary and your startup script.  Start the game, then connect with telnet.
 ```
 ./startup &
