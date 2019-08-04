@@ -33,7 +33,7 @@ git clone https://github.com/ldmud/ldmud.git
 cd ldmud
 rm -rf .git
 ./autogen.sh
-cd ~ldmud/src/settings
+cd ~/ldmud/src/settings
 ```
 ### Configure Your Game Driver Installation
 Use `nano` or `vi` to create a settings file called `aoe`.
@@ -117,7 +117,7 @@ fi
 ```
 Set permissions with `chmod ug+rw startup` and `chmod o+x startup`.
 ### Start the Game
-In the `~/ldmud/bin` directory start the game, then connect to the game.
+In the `~/ldmud/bin`, find the driver binary and your startup script.  Start the game, then connect with telnet.
 ```
 ./startup &
 telnet localhost 7680
