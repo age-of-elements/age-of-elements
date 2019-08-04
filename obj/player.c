@@ -2,6 +2,8 @@
 #include "log.h"
 #include "living.h"
 
+#include "/obj/login/telopt.c"
+
 #define WIZ 1
 #define ARCH 0
 
@@ -73,14 +75,22 @@ string version() {
     return "2.04.05";
 }
 
-/* logon() is called when the players logges on. */
+/* logon() is called when the players logs on. */
 
 static int logon() {
     time_to_save = 500;
     /* enable_commands(); */
+
+    // Tell the client that we support the
+    // Generic Mud Communication Protocol (GMCP)
+    binary_message( ({ IAC, WILL, TELOPT_GMCP }), 3);
+
+    // Tell the client that we support the
+    // Mud Server Status Protocol (MSSP)
+    binary_message( ({ IAC, WILL, TELOPT_MSSP }), 3);
+
     cat("/WELCOME");
     write("Version: " + version() + "\n");
-    write("What is your name: ");
     input_to("logon2", INPUT_PROMPT, "What is your name: ");
     call_out("time_out", 120);
     return 1;

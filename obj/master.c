@@ -109,6 +109,9 @@ static string _include_dirs_hook (string include_name, string current_file)
   name = "sys/"+include_name;
   if (file_size(ADD_SLASH(name)) >= 0)
     return name;
+  name = "include/"+include_name;
+  if (file_size(ADD_SLASH(name)) >= 0)
+    return name;
   name = "room/"+include_name;
   if (file_size(ADD_SLASH(name)) >= 0)
     return name;
@@ -448,6 +451,7 @@ void inaugurate_master (int arg)
   set_driver_hook(H_NOTIFY_FAIL, "What?\n");
   set_driver_hook(H_INCLUDE_DIRS, #'_include_dirs_hook);
   set_driver_hook(H_AUTO_INCLUDE, #'_auto_include_hook);
+  set_driver_hook(H_TELNET_NEG, "telopt_negotiate");
 }
 
 //---------------------------------------------------------------------------
