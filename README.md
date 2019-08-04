@@ -83,7 +83,7 @@ sudo systemctl restart crond
 sudo systemctl start mariadb
 sudo mysql_secure_installation
 ```
-* [Install phpMyAdmin](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html)
+* [Install phpMyAdmin (optional)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html)
 ```
 sudo yum install php-mbstring -y
 sudo systemctl restart httpd
@@ -93,7 +93,7 @@ wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
 mkdir phpMyAdmin && tar -xvzf phpMyAdmin-latest-all-languages.tar.gz -C phpMyAdmin --strip-components 1
 rm phpMyAdmin-latest-all-languages.tar.gz
 ```
-* [Secure Your phpMyAdmin Installation](https://docs.phpmyadmin.net/en/latest/setup.html#securing-your-phpmyadmin-installation)
+* [Secure Your phpMyAdmin Installation (if installed)](https://docs.phpmyadmin.net/en/latest/setup.html#securing-your-phpmyadmin-installation)
 * [Hosting a WordPress Blog](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hosting-wordpress.html)
 ```
 cd ~/
@@ -115,6 +115,7 @@ AllowOverride All
 sudo chown -R apache:apache /var/www/html
 sudo service httpd restart
 ```
+* Connect to your WordPress Blog and complete the setup
 * Configure the web server and database to restart upon reboots
 ```
 sudo systemctl enable httpd && sudo systemctl enable mariadb
