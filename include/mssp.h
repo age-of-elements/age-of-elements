@@ -37,7 +37,7 @@
 #define MSSP_VAR_HOSTNAME           "HOSTNAME"
 #define MSSP_VAL_HOSTNAME           "ageofelements.org"
 #define MSSP_VAR_PORT               "PORT"
-#define MSSP_VAL_PORT               "7680"
+#define MSSP_VAL_PORT               "8680,7680"
 #define MSSP_VAR_CODEBASE           "CODEBASE"
 #define MSSP_VAL_CODEBASE           sprintf("LDMud %s", version())
 #define MSSP_VAR_CONTACT            "CONTACT"
@@ -111,7 +111,7 @@
 #define MSSP_VAR_XTERM_256_COLORS   "XTERM 256 COLORS"
 #define MSSP_VAL_XTERM_256_COLORS   "0"
 #define MSSP_VAR_SSL                "SSL"
-#define MSSP_VAL_SSL                "0"
+#define MSSP_VAL_SSL                "1"
 #define MSSP_VAR_PAY_TO_PLAY        "PAY TO PLAY"
 #define MSSP_VAL_PAY_TO_PLAY        "0"
 #define MSSP_VAR_PAY_FOR_PERKS      "PAY FOR PERKS"
