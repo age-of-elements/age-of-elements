@@ -73,11 +73,14 @@ sudo yum install -y certbot python2-certbot-apache
 sudo certbot
 ```
 * [Test and Harden your SSL Server](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#ssl_test)
+Update your SSL configuration with `sudo nano /etc/httpd/conf.d/ssl.conf`, containing the following content:
 ```
-sudo nano /etc/httpd/conf.d/ssl.conf
 #SSLProtocol all -SSLv3
 SSLProtocol -SSLv2 -SSLv3 -TLSv1 -TLSv1.1 +TLSv1.2
 SSLHonorCipherOrder on
+```
+Restart the HTTP daemon and setup Let's Encrypt to renew on a periodic basis.
+```
 sudo systemctl restart httpd
 sudo nano /etc/crontab
 39 1,13 * * * root certbot renew --no-self-upgrade
@@ -106,7 +109,9 @@ wget https://wordpress.org/latest.tar.gz
 tar -xzf latest.tar.gz
 mysql -u root -p
 CREATE USER 'wordpress-user' IDENTIFIED BY 'your_strong_password';
+```
 Backticks used on purpose here.
+```
 CREATE DATABASE `wordpress-db`;
 GRANT ALL PRIVILEGES ON `wordpress-db`.* TO "wordpress-user";
 FLUSH PRIVILEGES;
@@ -115,8 +120,13 @@ cp wordpress/wp-config-sample.php wordpress/wp-config.php
 nano wordpress/wp-config.php
 https://api.wordpress.org/secret-key/1.1/salt/
 cp -r wordpress/* /var/www/html/
-sudo nano /etc/httpd/conf/httpd.conf
+```
+Update your HTTP configuration with `sudo nano /etc/httpd/conf/httpd.conf`, containing the following content:
+```
 AllowOverride All
+```
+then
+```
 sudo chown -R apache:apache /var/www/html
 sudo service httpd restart
 ```
@@ -127,7 +137,7 @@ sudo systemctl enable httpd && sudo systemctl enable mariadb
 sudo systemctl status mariadb
 sudo systemctl status httpd
 ```
-### Install LDMud Game Driver ###
+### Install the LDMud Game Driver ###
 #### Install Dependencies ####
 Install the standard developer tools, then tools for mysql, json-c, XML2 and OpenSSL. 
 ```
