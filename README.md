@@ -25,6 +25,7 @@ The topdirectory contains these files and directories:
 * _Security Group_, Type: `SSH` Protocol: `TCP` Port Range: `22` Source: `Your IP` Description: `Developer Access`
 * _Security Group_, Type: `Custom TCP Rule` Protocol: `TCP` Port Range: `7680` Source: `Anywhere` Description: `TELNET to Game`
 * _Security Group_, Type: `Custom UDP Rule` Protocol: `UDP` Port Range: `7681` Source: `Anywhere` Description: `API to Game`
+* _Security Group_, Type: `Custom TCP Rule` Protocol: `TCP` Port Range: `8680` Source: `Anywhere` Description: `TLS Tunnel to Game`
 * _Security Group_, Type: `HTTP` Protocol: `TCP` Port Range: `80` Source: `Anywhere` Description: `Web Server`
 * _Security Group_, Type: `HTTPS` Protocol: `TCP` Port Range: `443` Source: `Anywhere` Description: `Web Server`
 * [Connect with SSH to your instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
@@ -228,3 +229,74 @@ In the `~/ldmud/bin`, find the driver binary and your startup script.  Start the
 ./startup &
 telnet localhost 7680
 ```
+### Encrypt Data In Transit ###
+The Telnet protocol is transmitted as clear text over the Internet and could leave data, such as player passwords, visible to unwanted parties.  To scramble, or encrypt the data in transit, so it can't be read by third-parties on the Internet, create a TLS (Transport Layer Security) Tunnel.  To provide TLS, we'll adapt the linked Mudlet wiki guidance from Paul Saindon of Iron Realms by installing **stunnel** `sudo yum install stunnel` and **ipset** `sudo yum install ipset` for Amazon Linux 2.
+* [Sample TLS Configuration](https://wiki.mudlet.org/w/Sample_TLS_Configuration)
+#### Create a script to setup iptables ####
+Create a shell script that executes after reboot when stunnel starts to setup iptables `sudo nano /usr/libexec/telnet_wrapper_configuration`, containing the following content:
+```perl
+#!/bin/sh
+
+ipset create stunneled hash:ip,port -exist timeout 300
+iptables -t mangle -A PREROUTING -p tcp -m tcp --dport 8680 -j SET --add-set stunneled src,srcport
+iptables -t mangle -N DIVERT
+iptables -t mangle -A OUTPUT -p tcp -m set --match-set stunneled dst,dstport -m tcp --sport 7680 -j DIVERT
+iptables -t mangle -A DIVERT -j MARK --set-mark 1
+iptables -t mangle -A DIVERT -j ACCEPT
+ip rule add fwmark 1 lookup 100
+ip route add local 0.0.0.0/0 dev lo table 100
+sh -c "echo 0 >/proc/sys/net/ipv4/conf/lo/rp_filter"
+sysctl -w net.ipv4.conf.default.route_localnet=1
+sysctl -w net.ipv4.conf.all.route_localnet=1
+
+exit 0
+```
+Set permissions for the shell script with `sudo chmod 755 /usr/libexec/telnet_wrapper_configuration`.
+#### Configure stunnel ####
+Create a configuration file for stunnel with `sudo nano /etc/stunnel/stunnel.conf`, containing the following content:
+```
+; Allow only TLS, thus avoiding SSL
+sslVersion = TLSv1.2
+pid = /var/stunnel.pid
+
+[telnet]
+cert = /etc/letsencrypt/live/ageofelements.org/cert.pem
+key = /etc/letsencrypt/live/ageofelements.org/privkey.pem
+accept = 8680
+connect = 127.0.0.1:7680
+transparent = source
+```
+#### Use systemd to automatically start stunnel at boot ####
+Create a unit file to define the systemd service with `sudo nano /etc/systemd/system/stunnel.service`, containing the following content:
+```
+[Unit]
+Description=Encryption wrapper service.
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/stunnel /etc/stunnel/stunnel.conf
+ExecStartPost=/usr/libexec/telnet_wrapper_configuration
+
+[Install]
+WantedBy=multi-user.target
+```
+* Set permissions with `sudo chmod 644 /etc/systemd/system/stunnel.service`.
+* Start the service with `sudo systemctl start stunnel`.
+* Check the status with `sudo systemctl status stunnel`, which should resemble the content below:
+```
+stunnel.service - Encryption wrapper service.
+   Loaded: loaded (/etc/systemd/system/stunnel.service; enabled; vendor preset: disabled)
+   Active: inactive (dead) since Mon 2019-08-12 04:49:39 UTC; 21h ago
+  Process: 2704 ExecStartPost=/bin/sh /usr/libexec/telnet_wrapper_configuration (code=exited, status=0/SUCCESS)
+  Process: 2703 ExecStart=/usr/bin/stunnel /etc/stunnel/stunnel.conf (code=exited, status=0/SUCCESS)
+ Main PID: 2703 (code=exited, status=0/SUCCESS)
+   CGroup: /system.slice/stunnel.service
+           ├─2740 /usr/bin/stunnel /etc/stunnel/stunnel.conf
+           ├─2741 /usr/bin/stunnel /etc/stunnel/stunnel.conf
+           ├─2742 /usr/bin/stunnel /etc/stunnel/stunnel.conf
+           ├─2743 /usr/bin/stunnel /etc/stunnel/stunnel.conf
+           ├─2744 /usr/bin/stunnel /etc/stunnel/stunnel.conf
+           └─2745 /usr/bin/stunnel /etc/stunnel/stunnel.conf
+```
+* Enable the service to start on reboot with `sudo systemctl enable stunnel`.
+* Protect data in transit by deleting the TELNET rule from your Security Groups and using the TLS connection.
