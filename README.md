@@ -58,12 +58,16 @@ sudo wget -r --no-parent -A 'epel-release-*.rpm' http://dl.fedoraproject.org/pub
 sudo rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-*.rpm
 sudo yum-config-manager --enable epel*
 sudo nano /etc/httpd/conf/httpd.conf
+```
 Locate the "listen 80" directive and add the following lines after it, replacing the example domain names with the actual Common Name and Subject Alternative Name (SAN).
+```
 <VirtualHost *:80>
     DocumentRoot "/var/www/html"
     ServerName "example.com"
     ServerAlias "www.example.com"
 </VirtualHost>
+```
+```
 sudo systemctl restart httpd
 sudo yum install -y certbot python2-certbot-apache
 sudo certbot
@@ -123,7 +127,8 @@ sudo systemctl enable httpd && sudo systemctl enable mariadb
 sudo systemctl status mariadb
 sudo systemctl status httpd
 ```
-#### Install LDMud Game Driver Dependencies ####
+### Install LDMud Game Driver ###
+#### Install Dependencies ####
 Install the standard developer tools, then tools for mysql, json-c, XML2 and OpenSSL. 
 ```
 sudo yum groupinstall "Development Tools"
@@ -132,7 +137,7 @@ sudo yum -y install json-c-devel
 sudo yum -y install libxml2-devel
 sudo yum -y install openssl-devel
 ```
-#### Install LDMud Game Driver ####
+#### Download LDMud ####
 Clone the game driver from the repository, detach it from source control, prep the game driver for the operating system.
 ```
 cd ~/
