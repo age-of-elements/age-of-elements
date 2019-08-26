@@ -2,7 +2,8 @@
 #define GMCP_H
 
 #define GMCP_PKG_CLIENT_GUI                             "Client.GUI"
-#define GMCP_KEY_CLIENT_GUI_VERSION                     "39"
+#define GMCP_KEY_CLIENT_GUI_VERSION                     "version"
+#define GMCP_VALUE_CLIENT_GUI_VERSION                   "39"
 #define GMCP_KEY_CLIENT_GUI_URL                         "url"
 #define GMCP_VALUE_CLIENT_GUI_URL                       sprintf("https://www.ageofelements.org/mudlet/AOEv%s.mpackage", GMCP_KEY_CLIENT_GUI_VERSION)
 #define GMCP_PKG_CLIENT_MAP                             "Client.Map"
