@@ -48,6 +48,9 @@ mssp_message() {
 #ifdef MSSP_VAR_CREATED
       , MSSP_VAR_CREATED: MSSP_VAL_CREATED
 #endif
+#ifdef MSSP_VAR_DISCORD
+      , MSSP_VAR_DISCORD: MSSP_VAL_DISCORD
+#endif
 #ifdef MSSP_VAR_ICON
       , MSSP_VAR_ICON: MSSP_VAL_ICON
 #endif
