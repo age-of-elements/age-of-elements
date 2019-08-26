@@ -44,6 +44,8 @@
 #define MSSP_VAL_CONTACT            "tamarindo@ageofelements.org"
 #define MSSP_VAR_CREATED            "CREATED"
 #define MSSP_VAL_CREATED            "2019"
+#define MSSP_VAR_DISCORD            "DISCORD"
+#define MSSP_VAL_DISCORD            "https://discord.gg/------"
 #define MSSP_VAR_ICON               "ICON"
 #define MSSP_VAL_ICON               "http://www.ageofelements.org/favicon.ico"
 #define MSSP_VAR_IP                 "IP"
