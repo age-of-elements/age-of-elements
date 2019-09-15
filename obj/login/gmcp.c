@@ -158,6 +158,14 @@ gmcp_output(string package, mixed value, int refresh) {
 		}
 	    case T_POINTER:
 	    case T_STRING:
+		// GMCP_PKG_CLIENT_GUI needs sent raw for Mudlet versions < 4.0.4
+		if (package == GMCP_PKG_CLIENT_GUI && stringp(value)) {
+		    binary_message(({IAC, SB, TELOPT_GMCP}));
+		    binary_message(to_bytes(sprintf("%s %s", package, value), "UTF-8"));
+		    binary_message(({IAC, SE}));
+
+		    return 1;
+		}
 	    case T_NUMBER:
 	    case T_FLOAT:
 		// Only send what has changed
@@ -178,10 +186,6 @@ gmcp_output(string package, mixed value, int refresh) {
 		binary_message(to_bytes(sprintf("%s %s", package, json_serialized_value), "UTF-8"));
 		binary_message(({IAC, SE}));
 	    }
-	} else { // GMCP_PKG_CLIENT_GUI needs sent raw
-	    binary_message(({IAC, SB, TELOPT_GMCP}));
-	    binary_message(to_bytes(sprintf("%s %s", package, value), "UTF-8"));
-	    binary_message(({IAC, SE}));
 	}
 
 	return 1;
