@@ -288,9 +288,11 @@ process_mxp(string message, int mxpEnabled)
 //---------------------------------------------------------------------------
 void write(mixed arg)
 {
-    if (!stringp(arg)) efun::write(arg);
-
-    efun::write(process_mxp(arg, this_player()->does_mxp()));
+    if (!stringp(arg)) {
+	efun::write(arg);
+    } else {
+	efun::write(process_mxp(arg, this_player()->does_mxp()));
+    }
 }
 
 //---------------------------------------------------------------------------
