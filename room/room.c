@@ -1,3 +1,5 @@
+#include <mxp.h>
+
 /*
  * This is a proposal of a replacement to std.h. It is used with
  * 'inherit "room/room";'.
@@ -67,7 +69,7 @@ void long(string str) {
 		write("    There are " + convert_number(sizeof(dest_dir)/2) +
 		      " obvious exits:");
 	    while(i < sizeof(dest_dir)) {
-		write(" " + dest_dir[i]);
+		write(" " + MXPTAG("Ex") + dest_dir[i] + MXPTAG("/Ex"));
 		i += 2;
 		if (i == sizeof(dest_dir) - 1)
 		    write(" and");

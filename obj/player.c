@@ -70,7 +70,6 @@ string query_msgout() { return msgout; }
 string query_mmsgin() { return mmsgin; }
 string query_mmsgout() { return mmsgout; }
 
-
 string version() {
     return "2.04.05";
 }
@@ -82,12 +81,16 @@ static int logon() {
     /* enable_commands(); */
 
     // Tell the client that we support the
-    // Generic Mud Communication Protocol (GMCP)
-    binary_message( ({ IAC, WILL, TELOPT_GMCP }), 3);
-
-    // Tell the client that we support the
     // Mud Server Status Protocol (MSSP)
     binary_message( ({ IAC, WILL, TELOPT_MSSP }), 3);
+
+    // Tell the client that we support the
+    // Mud eXtension Protocol (MXP)
+    binary_message( ({ IAC, WILL, TELOPT_MXP }), 3);
+
+    // Tell the client that we support the
+    // Generic Mud Communication Protocol (GMCP)
+    binary_message( ({ IAC, WILL, TELOPT_GMCP }), 3);
 
     cat("/WELCOME");
     write("Version: " + version() + "\n");

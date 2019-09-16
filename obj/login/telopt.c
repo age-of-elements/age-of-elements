@@ -12,11 +12,13 @@
 **      This file process:
 **
 **	* Mud Server Status Protocol (MSSP)
+**	* Mud eXtention Protocol (MXP)
 **	* Generic Mud Communications Protocol (GMCP)
 **
 ** References:
 **
 **	https://tintin.sourceforge.io/protocols/mssp/
+**	https://www.gammon.com.au/mushclient/addingservermxp.htm
 **	http://mudflinging.tumblr.com/post/37634529575/gmcp-negotiation-in-ldmud
 **	https://www.gammon.com.au/gmcp
 **	http://www.aardwolf.com/wiki/index.php/Clients/GMCP
@@ -25,14 +27,23 @@
 ** See Also:
 **
 **	/include/mssp.h
+**	/include/mxp.h
 **	/include/gmcp.h
 **      /obj/login/mssp.c
 **      /obj/login/gmcp.c
 */
 
+#ifndef TELNET_H__
+#include <sys/telnet.h>
+#endif // TELNET_H__
+
 #ifndef MSSP_H
 #include <mssp.h>
 #endif // MSSP_H
+
+#ifndef MXP_H
+#include <mxp.h>
+#endif // MXP_H
 
 #ifndef GMCP_H
 #include <gmcp.h>
@@ -41,6 +52,10 @@
 #ifndef OBJ_LOGIN_MSSP_C
 #include "/obj/login/mssp.c"
 #endif // OBJ_LOGIN_MSSP_C
+
+#ifndef OBJ_LOGIN_MXP_C
+#include "/obj/login/mxp.c"
+#endif // OBJ_LOGIN_MXP_C
 
 #ifndef OBJ_LOGIN_GMCP_C
 #include "/obj/login/gmcp.c"
@@ -58,9 +73,18 @@ telopt_negotiate(int action, int option, int *optdata) {
     case TELOPT_MSSP:
 
 	if (action == DO) {
+	    set_mssp(1);
+
 	    binary_message(({IAC, SB, TELOPT_MSSP}));
 	    binary_message(to_bytes(mssp_message(), "UTF-8"));
 	    binary_message(({IAC, SE}));
+	}
+	break;
+
+    case TELOPT_MXP:
+	if (action == DO) {
+	    set_mxp(1);
+	    init_mxp();
 	}
 	break;
 

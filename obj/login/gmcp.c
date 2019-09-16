@@ -60,14 +60,27 @@
 
 #define OBJ_LOGIN_GMCP_C
 
-static mapping gmcp_cache; /* Stores the GMCP we have collected */
+nosave mapping gmcp_cache; /* Stores the GMCP we have collected */
 
 // Prototypes
-public mapping query_gmcp_cache();
+public nomask int does_gmcp();
+public nomask mapping query_gmcp_cache();
 private void gmcp_input(int *optdata);
-public varargs int gmcp_output(string package, mixed value, int refresh);
+public nomask varargs int gmcp_output(string package, mixed value, int refresh);
 private varargs mixed gmcp_cache_filter(string package, mixed gmcp_value);
 private mixed parse_cache(string package, mixed gmcp, string *keys);
+
+/*
+** Function: has_gmcp
+**
+**  Purpose: Query whether the client supports GMCP.
+**
+**  Returns: int, 0 for false, 1 for true.
+*/
+public nomask int
+does_gmcp() {
+    return gmcp_cache ? 1 : 0;
+}
 
 /*
 ** Function: query_gmcp_cache
@@ -78,7 +91,8 @@ private mixed parse_cache(string package, mixed gmcp, string *keys);
 **	         so not to continually send it on to the player's client
 **               when they should already have the information.
 */
-public mapping query_gmcp_cache() {
+public nomask mapping
+query_gmcp_cache() {
     return copy(gmcp_cache);
 }
 
@@ -142,7 +156,7 @@ gmcp_input(int *optdata) {
 **
 **    Returns: 1 for success, 0 for failure (invalid data)
 */
-public varargs int
+public nomask varargs int
 gmcp_output(string package, mixed value, int refresh) {
     mixed cache_value;
 

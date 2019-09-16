@@ -25,6 +25,38 @@
 
 #define OBJ_LOGIN_MSSP_C
 
+static int does_mssp = 0;
+
+private void set_mssp(int arg);
+public nomask int does_mssp();
+private string mssp_message();
+
+/*
+**    Function: set_mssp
+**
+**     Purpose: Set whether the client supports MSSP.
+**
+**  Parameters: int arg, 0 for false, 1 for true.
+**
+**     Returns: void
+*/
+private void
+set_mssp(int arg) {
+    does_mssp = arg;
+}
+
+/*
+** Function: does_mssp
+**
+**  Purpose: Query whether the client supports MSSP.
+**
+**  Returns: int, 0 for false, 1 for true.
+*/
+public nomask int
+does_mssp() {
+    return does_mssp;
+}
+
 private string
 mssp_message() {
     string mssp_message = "";
