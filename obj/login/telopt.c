@@ -11,12 +11,14 @@
 **
 **      This file process:
 **
+**	* Mud Sound Protocol (MSP)
 **	* Mud Server Status Protocol (MSSP)
 **	* Mud eXtention Protocol (MXP)
 **	* Generic Mud Communications Protocol (GMCP)
 **
 ** References:
 **
+**	https://www.zuggsoft.com/zmud/msp.htm
 **	https://tintin.sourceforge.io/protocols/mssp/
 **	https://www.gammon.com.au/mushclient/addingservermxp.htm
 **	http://mudflinging.tumblr.com/post/37634529575/gmcp-negotiation-in-ldmud
@@ -26,16 +28,23 @@
 **
 ** See Also:
 **
+**	/include/msp.h
 **	/include/mssp.h
 **	/include/mxp.h
 **	/include/gmcp.h
+**      /obj/login/msp.c
 **      /obj/login/mssp.c
+**      /obj/login/mxp.c
 **      /obj/login/gmcp.c
 */
 
 #ifndef TELNET_H__
 #include <sys/telnet.h>
 #endif // TELNET_H__
+
+#ifndef MSP_H
+#include <msp.h>
+#endif // MSP_H
 
 #ifndef MSSP_H
 #include <mssp.h>
@@ -48,6 +57,10 @@
 #ifndef GMCP_H
 #include <gmcp.h>
 #endif // GMCP_H
+
+#ifndef OBJ_LOGIN_MSP_C
+#include "/obj/login/msp.c"
+#endif // OBJ_LOGIN_MSP_C
 
 #ifndef OBJ_LOGIN_MSSP_C
 #include "/obj/login/mssp.c"
@@ -65,19 +78,27 @@
 
 public void
 telopt_negotiate(int action, int option, int *optdata) {
-    string type;
-    int n;
-
     switch (option)
     {
-    case TELOPT_MSSP:
+    case TELOPT_MSP:
+	if (action == DO) {
+	    set_msp(1);
+	    // Send the default URL
+	    msp_output(MSP_SOUND, ([MSP_FILENAME: MSP_FILENAME_OFF, MSP_URL: MSP_URL_DEFAULT]));
+	} else if (action == DONT) {
+	    set_msp(0);
+	}
+	break;
 
+    case TELOPT_MSSP:
 	if (action == DO) {
 	    set_mssp(1);
 
 	    binary_message(({IAC, SB, TELOPT_MSSP}));
 	    binary_message(to_bytes(mssp_message(), "UTF-8"));
 	    binary_message(({IAC, SE}));
+	} else if (action == DONT) {
+	    set_mssp(0);
 	}
 	break;
 
@@ -85,18 +106,18 @@ telopt_negotiate(int action, int option, int *optdata) {
 	if (action == DO) {
 	    set_mxp(1);
 	    init_mxp();
+	} else if (action == DONT) {
+	    set_mxp(0);
 	}
 	break;
 
     case TELOPT_GMCP:
-
 	if (action == SB) {
 	    gmcp_input(optdata);
 	}
 	break;
 
     default:
-
 	if (action == WILL) {
 	    binary_message(to_bytes(sprintf("%c%c%c", IAC, DONT, option), "UTF-8"), 3);
 	} else if (action == DO) {
