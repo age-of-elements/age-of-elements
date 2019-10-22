@@ -1,6 +1,16 @@
 # Age of Elements #
 * Age of Elements is an LPMud game library that runs on the LDMud game driver.
 * Age of Elements in built up from the LPMud 2.4.5 game library that comes with the LDMud game driver.
+* Age of Elements is located at telnet://ageofelements.org:7680 and port 8680 encrypts data-in-transit (see detail below).
+
+Age of Elements is primarily being used at this time to build up examples of [game telnet protocols](https://github.com/age-of-elements/age-of-elements/tree/master/obj/login), such as:
+
+* Generic Mud Communication Protocol (GMCP)
+* Mud Server Status Protocol (MSSP)
+* Mud eXtension Protocol (MXP)
+* Mud Sound Protocol (MSP)
+
+In time, we'll add in examples of a [Mudlet](https://mudlet.org) GUI and how to send mapper data from inside the game.
 
 The topdirectory contains these files and directories:
 
