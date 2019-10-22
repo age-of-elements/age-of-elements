@@ -29,7 +29,7 @@
 #define MSSP_VAR_NAME               "NAME"
 #define MSSP_VAL_NAME               "Age of Elements"
 #define MSSP_VAR_PLAYERS            "PLAYERS"
-#define MSSP_VAL_PLAYERS            sprintf("%d", sizeof(users()))
+#define MSSP_VAL_PLAYERS            sprintf("%d", (sizeof(users()) - 1))
 #define MSSP_VAR_UPTIME             "UPTIME"
 #define MSSP_VAL_UPTIME             sprintf("%d", (time() - driver_info(DI_BOOT_TIME)))
 

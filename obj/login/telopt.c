@@ -6,7 +6,7 @@
 **   Date: August 2019
 **
 ** Purpose: This module performs some of the core handling of telnet
-**	negotiation driven from a driver hook in the master  object.
+**	negotiation driven from a driver hook in the master object.
 **	These messages are passed to the telopt_negotiate function.
 **
 **      This file process:
@@ -18,10 +18,24 @@
 **
 ** References:
 **
-**	https://www.zuggsoft.com/zmud/msp.htm
-**	https://tintin.sourceforge.io/protocols/mssp/
-**	https://www.gammon.com.au/mushclient/addingservermxp.htm
+**	Telnet Negotiation in LDMud:
+**
 **	http://mudflinging.tumblr.com/post/37634529575/gmcp-negotiation-in-ldmud
+**
+**	MSP:
+**
+**	https://www.zuggsoft.com/zmud/msp.htm
+**
+**	MSSP:
+**
+**	https://tintin.sourceforge.io/protocols/mssp/
+**
+**	MXP:
+**
+**	https://www.gammon.com.au/mushclient/addingservermxp.htm
+**
+**	GMCP:
+**
 **	https://www.gammon.com.au/gmcp
 **	http://www.aardwolf.com/wiki/index.php/Clients/GMCP
 **	http://nexus.ironrealms.com/GMCP
@@ -85,6 +99,13 @@ telopt_negotiate(int action, int option, int *optdata) {
 	    set_msp(1);
 	    // Send the default URL
 	    msp_output(MSP_SOUND, ([MSP_FILENAME: MSP_FILENAME_OFF, MSP_URL: MSP_URL_DEFAULT]));
+	    msp_test(1);
+	    call_out(#'msp_test, 10, 2);
+	    call_out(#'msp_test, 20, 3);
+	    call_out(#'msp_test, 30, 4);
+	    call_out(#'msp_test, 40, 5);
+	    call_out(#'msp_test, 50, 6);
+	    call_out(#'msp_test, 60, 7);
 	} else if (action == DONT) {
 	    set_msp(0);
 	}

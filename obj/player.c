@@ -81,6 +81,10 @@ static int logon() {
     /* enable_commands(); */
 
     // Tell the client that we support the
+    // Mud Sound Protocol (MSP)
+    binary_message( ({ IAC, WILL, TELOPT_MSP }), 3);
+
+    // Tell the client that we support the
     // Mud Server Status Protocol (MSSP)
     binary_message( ({ IAC, WILL, TELOPT_MSSP }), 3);
 
