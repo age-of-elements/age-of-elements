@@ -122,7 +122,7 @@ public varargs void msp_test(int test) {
 	      ]));
 	    break;
 	case 1:
-	    // !!SOUND(wind.wav V=25 L=-1 T="weather")
+	    // !!MUSIC(wind.wav V=25 L=-1 T="weather")
 	    // The music of wind continuously plays.
 	    msp_output(MSP_MUSIC, ([
 		MSP_FILENAME: "wind.wav"
