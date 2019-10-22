@@ -114,14 +114,16 @@ msp_output(string sound_or_music, mapping data) {
 public varargs void msp_test(int test) {
     switch (test) {
 	case 0:
-	    // !!SOUND(Off U=https://www.ageofelements.org:5000/sounds)
+	    // !!SOUND(Off U=https://www.ageofelements.org/sounds)
+	    // This is how we tell our client where to download these files from.
 	    msp_output(MSP_SOUND, ([
 		MSP_FILENAME: "Off"
 		, MSP_URL: "https:/\/www.ageofelements.org/sounds"
 	      ]));
 	    break;
 	case 1:
-	    // !!SOUND(weather/rain.wav V=80 P=20)
+	    // !!SOUND(wind.wav V=25 L=-1 T="weather")
+	    // The music os wind continuously plays.
 	    msp_output(MSP_MUSIC, ([
 		MSP_FILENAME: "wind.wav"
 		, MSP_VOLUME: MSP_VOLUME_LOW
@@ -130,7 +132,8 @@ public varargs void msp_test(int test) {
 	      ]));
 	    break;
 	case 2:
-	    // !!SOUND(thunder V=100 L=1 P=30 T=weather)
+	    // !!SOUND(lightning V=25 L=1 T=weather)
+	    // A lightning strike at low volume must be far off.
 	    msp_output(MSP_SOUND, ([
 		MSP_FILENAME: "lightning"
 		, MSP_VOLUME: MSP_VOLUME_LOW
@@ -139,7 +142,8 @@ public varargs void msp_test(int test) {
 	      ]));
 	    break;
 	case 3:
-	    // !!SOUND(thunder V=100 L=1 P=30 T=weather)
+	    // !!SOUND(tornado V=50 L=1 T=weather)
+	    // A tornado is spinning somewhere in the distance.
 	    msp_output(MSP_SOUND, ([
 		MSP_FILENAME: "tornado"
 		, MSP_VOLUME: MSP_VOLUME_DEFAULT
@@ -148,7 +152,8 @@ public varargs void msp_test(int test) {
 	      ]));
 	    break;
 	case 4:
-	    // !!SOUND(thunder V=100 L=1 P=30 T=weather)
+	    // !!SOUND(lightning V=75 L=2 T=weather)
+	    // Two back-to-back lightning strikes at high volume!
 	    msp_output(MSP_SOUND, ([
 		MSP_FILENAME: "lightning"
 		, MSP_VOLUME: MSP_VOLUME_HIGH
@@ -157,7 +162,8 @@ public varargs void msp_test(int test) {
 	      ]));
 	    break;
 	case 5:
-	    // !!SOUND(thunder V=100 L=1 P=30 T=weather)
+	    // !!SOUND(tornado V=75 L=1 T=weather)
+	    // High volume tornado!
 	    msp_output(MSP_SOUND, ([
 		MSP_FILENAME: "tornado"
 		, MSP_VOLUME: MSP_VOLUME_HIGH
@@ -166,7 +172,8 @@ public varargs void msp_test(int test) {
 	      ]));
 	    break;
 	case 6:
-	    // !!SOUND(thunder V=100 L=1 P=30 T=weather)
+	    // !!SOUND(lightning V=100 L=1 T=weather)
+	    // Very loud lightning!
 	    msp_output(MSP_SOUND, ([
 		MSP_FILENAME: "lightning"
 		, MSP_VOLUME: MSP_VOLUME_LOUD
@@ -175,7 +182,8 @@ public varargs void msp_test(int test) {
 	      ]));
 	    break;
 	case 7:
-	    // !!SOUND(Off U=https://www.ageofelements.org:5000/sounds)
+	    // !!MUSIC(Off)
+	    // This stops the repeating wind sound
 	    msp_output(MSP_MUSIC, ([
 		MSP_FILENAME: "Off"
 	      ]));
