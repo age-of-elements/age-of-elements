@@ -79,6 +79,4 @@ init_mxp() {
 
     // Exit tag
     write(MXPTAG("!ELEMENT Ex '<send>' FLAG=RoomExit"));
-
-    write("MXP support enabled\n");
 }

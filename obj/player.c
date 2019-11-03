@@ -137,6 +137,14 @@ static void try_throw_out(string str)
         destruct(other_copy);        /* Is this really needed ? */
     other_copy = 0;
     move_player_to_start(ob);
+    gmcp_test(0);
+    gmcp_test(1);
+    call_out(#'gmcp_test, 10, 2);
+    call_out(#'gmcp_test, 20, 3);
+    call_out(#'gmcp_test, 30, 4);
+    call_out(#'gmcp_test, 40, 5);
+    call_out(#'gmcp_test, 50, 6);
+    call_out(#'gmcp_test, 60, 7);
 #ifdef LOG_ENTER
     log_file("ENTER", " (throw)\n");
 #endif

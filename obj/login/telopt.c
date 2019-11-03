@@ -98,6 +98,7 @@ telopt_negotiate(int action, int option, int *optdata) {
 	if (action == DO) {
 	    set_msp(1);
 	    // Send the default URL
+/*
 	    msp_output(MSP_SOUND, ([MSP_FILENAME: MSP_FILENAME_OFF, MSP_URL: MSP_URL_DEFAULT]));
 	    msp_test(1);
 	    call_out(#'msp_test, 10, 2);
@@ -106,6 +107,7 @@ telopt_negotiate(int action, int option, int *optdata) {
 	    call_out(#'msp_test, 40, 5);
 	    call_out(#'msp_test, 50, 6);
 	    call_out(#'msp_test, 60, 7);
+*/
 	} else if (action == DONT) {
 	    set_msp(0);
 	}

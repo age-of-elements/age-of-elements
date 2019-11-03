@@ -125,6 +125,7 @@ gmcp_input(int *optdata) {
     case GMCP_PKG_CORE_HELLO:
 	// Cache the data
 	gmcp_cache_filter(package, json_parse(value));
+	break;
 
 	// Reply to the client
 #if 0
@@ -212,20 +213,20 @@ gmcp_output(string package, mixed value, int refresh) {
 **   Function: gmcp_cache_filter
 **
 **    Purpose: A method that controls whether GMCP data will be cached within
-**                 a nosave mapping (gmcp_cache) within the player object to
-**                 reduce the amount of duplicate data sent to the player's
-**                 client.
+**             a nosave mapping (gmcp_cache) within the player object to
+**             reduce the amount of duplicate data sent to the player's
+**             client.
 **
 ** Parameters: string package, a GMCP package name, such as those found in
-**                 /include/gmcp.h that start with GMCP_PKG and resolve to
-**                 examples like "Char.Status" and "Room.Info".
+**             /include/gmcp.h that start with GMCP_PKG and resolve to
+**             examples like "Char.Status" and "Room.Info".
 **
 **             mixed gmcp_value, a string, array or mapping containing GMCP
-**                 data.
+**             data.
 **
 **    Returns: mixed, a string, array or mapping containing GMCP data or 0 if
-**                 the information in the cache matched with the input data and
-**                 nothing needs sent back to the player's client.
+**             the information in the cache matched with the input data and
+**             nothing needs sent back to the player's client.
 */
 private varargs mixed
 gmcp_cache_filter(string package, mixed gmcp_value) {
@@ -239,6 +240,11 @@ gmcp_cache_filter(string package, mixed gmcp_value) {
 	switch (package) {
 
 	case GMCP_PKG_CLIENT_GUI:
+	    filtered_result = gmcp_value;
+	    break;
+
+	case GMCP_PKG_CLIENT_SOUND:
+	case GMCP_PKG_CLIENT_MUSIC:
 	    filtered_result = gmcp_value;
 	    break;
 
@@ -262,38 +268,38 @@ gmcp_cache_filter(string package, mixed gmcp_value) {
 **   Function: parse_cache
 **
 **    Purpose: Accepts data matching up to the GMCP spec (or this game's
-**                 customizations) and stores it in a nosave mapping within
-**                 the player object if there is no value in the cache or if
-**                 the cache needs updated because the data has has changed.
+**             customizations) and stores it in a nosave mapping within
+**             the player object if there is no value in the cache or if
+**             the cache needs updated because the data has has changed.
 **
 ** Parameters: string package, one of the GMCP_PKG defines from
-**                 /include/gmcp.h (i.e. GMCP_PKG_ROOM_INFO is "Room.Info").
+**             /include/gmcp.h (i.e. GMCP_PKG_ROOM_INFO is "Room.Info").
 **
 **	       mixed gmcp, often a string, array or mapping containing
-**                 various GMCP_KEY keys from /include/gmcp.h and data
-**                 values (i.e. a mapping related to "Room.Info" like
-**                 ([ "num": 1, "name": "Temple Yard" ]).
+**             various GMCP_KEY keys from /include/gmcp.h and data
+**             values (i.e. a mapping related to "Room.Info" like
+**             ([ "num": 1, "name": "Temple Yard" ]).
 **
 **             string *keys, GMCP_KEY keys that relate with a single
-**                 GMCP_PKG as defined in /include/gmcp.h (i.e. related to
-**                 "Room.Info" ({ "num", "name", etc }) although these will
-**                 actually be defines like ({ GMCP_KEY_ROOM_INFO_NUM,
-**                 GMCP_KEY_ROOM_INFO_NAME, etc. })
+**             GMCP_PKG as defined in /include/gmcp.h (i.e. related to
+**             "Room.Info" ({ "num", "name", etc }) although these will
+**             actually be defines like ({ GMCP_KEY_ROOM_INFO_NUM,
+**             GMCP_KEY_ROOM_INFO_NAME, etc. })
 **
 **    Returns: mixed, if the cache was updated, this will contain the results
-**                 in the format similar to what was originally sent in to
-**                 this function that aligns with the GMCP specification.
-**                 If the cache was not updated then this function will
-**                 return 0, prompting the function that called this to send
-**                 no data to the intended recipient, because they should
-**                 already have it.
+**             in the format similar to what was originally sent in to
+**             this function that aligns with the GMCP specification.
+**             If the cache was not updated then this function will
+**             return 0, prompting the function that called this to send
+**             no data to the intended recipient, because they should
+**             already have it.
 **
 **       Note: This took a while to get all the processing of the mappings,
-**                 arrays, strings, numbers and floats cached in a way that
-**                 was sensible to store and also reasonable to parse through
-**                 for changes, so more code will be left in this example
-**                 than may be needed for what is implemented in this mudlib
-**                 at this time, but you're welcome.
+**             arrays, strings, numbers and floats cached in a way that
+**             was sensible to store and also reasonable to parse through
+**             for changes, so more code will be left in this example
+**             than may be needed for what is implemented in this mudlib
+**             at this time, but you're welcome.
 */
 private mixed
 parse_cache(string package, mixed gmcp, string *keys) {
@@ -564,4 +570,94 @@ parse_cache(string package, mixed gmcp, string *keys) {
     }
 
     return updated ? result : 0;
+}
+
+/*
+**    Function: gmcp_test
+**
+**     Purpose: Test GMCP from the ZMud specification found at
+**              https://www.zuggsoft.com/zmud/msp.htm.
+**
+**  Parameters: int arg, number of the test.
+**
+**     Returns: void
+*/
+public varargs void gmcp_test(int test) {
+    switch (test) {
+	case 0:
+	    // !!SOUND(Off U=https://www.ageofelements.org/sounds)
+	    // This is how we tell our client where to download these files from.
+     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
+		"name" : "Off"
+		, "url": "https:/\/www.ageofelements.org/sounds"
+              ]) );
+	    break;
+	case 1:
+	    // !!MUSIC(wind.wav V=25 L=-1 T="weather")
+	    // The music of wind continuously plays.
+     	    gmcp_output(GMCP_PKG_CLIENT_MUSIC, ([
+		"name": "wind.wav"
+		, "volume": "25"
+		, "length": "-1"
+		, "type": "weather"
+              ]) );
+	    break;
+	case 2:
+	    // !!SOUND(lightning V=25 L=1 T=weather)
+	    // A lightning strike at low volume must be far off.
+     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
+		"name": "lightning"
+		, "volume": 25
+		, "length": "1"
+		, "type": "weather"
+              ]) );
+	    break;
+	case 3:
+	    // !!SOUND(tornado V=50 L=1 T=weather)
+	    // A tornado is spinning somewhere in the distance.
+     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
+		"name": "tornado"
+		, "volume": "50"
+		, "length": "1"
+		, "type": "weather"
+              ]) );
+	    break;
+	case 4:
+	    // !!SOUND(lightning V=75 L=2 T=weather)
+	    // Two back-to-back lightning strikes at high volume!
+     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
+		"name": "lightning"
+		, "volume": "100"
+		, "length": 2
+		, "type": "weather"
+              ]) );
+	    break;
+	case 5:
+	    // !!SOUND(tornado V=75 L=1 T=weather)
+	    // High volume tornado!
+     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
+		"name": "tornado"
+		, "volume": "75"
+		, "length": "1"
+		, "type": "weather"
+              ]) );
+	    break;
+	case 6:
+	    // !!SOUND(lightning V=100 L=1 T=weather)
+	    // Very loud lightning!
+     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
+		"name": "lightning"
+		, "volume": "100"
+		, "length": "1"
+		, "type": "weather"
+              ]) );
+	    break;
+	case 7:
+	    // !!MUSIC(Off)
+	    // This stops the repeating wind sound
+     	    gmcp_output(GMCP_PKG_CLIENT_MUSIC, ([
+		"name": "Off"
+              ]) );
+	    break;
+    }
 }
