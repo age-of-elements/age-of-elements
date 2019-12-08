@@ -10,6 +10,7 @@
 ** References:
 **
 **      https://www.zuggsoft.com/zmud/msp.htm
+**	https://wiki.mudlet.org/w/Manual:Supported_Protocols#MSP
 **
 ** See Also:
 **
@@ -125,7 +126,7 @@ public varargs void msp_test(int test) {
 	    // !!MUSIC(wind.wav V=25 L=-1 T="weather")
 	    // The music of wind continuously plays.
 	    msp_output(MSP_MUSIC, ([
-		MSP_FILENAME: "wind.wav"
+		MSP_FILENAME: "weather/wind.wav"
 		, MSP_VOLUME: MSP_VOLUME_LOW
 		, MSP_LENGTH: MSP_LENGTH_REPEAT
 		, MSP_TYPE: "weather"
@@ -135,7 +136,7 @@ public varargs void msp_test(int test) {
 	    // !!SOUND(lightning V=25 L=1 T=weather)
 	    // A lightning strike at low volume must be far off.
 	    msp_output(MSP_SOUND, ([
-		MSP_FILENAME: "lightning"
+		MSP_FILENAME: "weather/lightning.wav"
 		, MSP_VOLUME: MSP_VOLUME_LOW
 		, MSP_LENGTH: MSP_LENGTH_DEFAULT
 		, MSP_TYPE: "weather"
@@ -145,7 +146,7 @@ public varargs void msp_test(int test) {
 	    // !!SOUND(tornado V=50 L=1 T=weather)
 	    // A tornado is spinning somewhere in the distance.
 	    msp_output(MSP_SOUND, ([
-		MSP_FILENAME: "tornado"
+		MSP_FILENAME: "weather/tornado.wav"
 		, MSP_VOLUME: MSP_VOLUME_DEFAULT
 		, MSP_LENGTH: MSP_LENGTH_DEFAULT
 		, MSP_TYPE: "weather"
@@ -155,7 +156,7 @@ public varargs void msp_test(int test) {
 	    // !!SOUND(lightning V=75 L=2 T=weather)
 	    // Two back-to-back lightning strikes at high volume!
 	    msp_output(MSP_SOUND, ([
-		MSP_FILENAME: "lightning"
+		MSP_FILENAME: "weather/lightning.wav"
 		, MSP_VOLUME: MSP_VOLUME_HIGH
 		, MSP_LENGTH: "2"
 		, MSP_TYPE: "weather"
@@ -165,7 +166,7 @@ public varargs void msp_test(int test) {
 	    // !!SOUND(tornado V=75 L=1 T=weather)
 	    // High volume tornado!
 	    msp_output(MSP_SOUND, ([
-		MSP_FILENAME: "tornado"
+		MSP_FILENAME: "weather/tornado.wav"
 		, MSP_VOLUME: MSP_VOLUME_HIGH
 		, MSP_LENGTH: MSP_LENGTH_DEFAULT
 		, MSP_TYPE: "weather"
@@ -175,7 +176,7 @@ public varargs void msp_test(int test) {
 	    // !!SOUND(lightning V=100 L=1 T=weather)
 	    // Very loud lightning!
 	    msp_output(MSP_SOUND, ([
-		MSP_FILENAME: "lightning"
+		MSP_FILENAME: "weather/lightning.wav"
 		, MSP_VOLUME: MSP_VOLUME_LOUD
 		, MSP_LENGTH: MSP_LENGTH_DEFAULT
 		, MSP_TYPE: "weather"

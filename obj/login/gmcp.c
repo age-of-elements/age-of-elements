@@ -9,25 +9,6 @@
 **	for the Generic Mud Communications Protocol (GMCP) to enhance
 **	interaction with player clients.
 **
-**	If we establish that a client could process GMCP messages, we should
-**	set an environmental variable in the player object like
-**	set_env("gmcp", 1).  Thereafter, code across the mudlib will perform
-**	a query_env("gmcp") to determine whether to send a GMCP event to
-**	the player.  Create a daemon to preprocess parsing and validation,
-**	then send to the gmcp_output function in this module.
-**
-**	In many cases, the information is stored in the nosave gmcp_cache
-**	mapping available in this module.  If the value was not yet in the
-**	cache, the GMCP will be sent to the player's client (i.e. Mudlet).
-**	If the value was already in the cache, the message will not be sent to
-**	the player's client.  There is also capability for the game to receive
-**	messages from the player's client to request that the game send
-**	certain GMCP messages.  For example, if there was a window in the
-**	player's client tracking the skills of a player and the player wanted
-**	to dig further into the details of that skills description the client
-**	window could send a request to the game to send that information on
-**	to the client.
-**
 **	Messages transferred between the game and the client are in JSON
 **	format.  The mapping for the cache management is fairly close to the
 **	format, but is optimized to enable the game to quickly parse the cache
@@ -39,6 +20,7 @@
 **	https://www.gammon.com.au/gmcp
 **	http://www.aardwolf.com/wiki/index.php/Clients/GMCP
 **	http://nexus.ironrealms.com/GMCP
+**	https://wiki.mudlet.org/w/Standards:MUD_Client_Media_Protocol
 **
 ** See Also:
 **
@@ -71,7 +53,7 @@ private varargs mixed gmcp_cache_filter(string package, mixed gmcp_value);
 private mixed parse_cache(string package, mixed gmcp, string *keys);
 
 /*
-** Function: has_gmcp
+** Function: does_gmcp
 **
 **  Purpose: Query whether the client supports GMCP.
 **
@@ -121,21 +103,44 @@ gmcp_input(int *optdata) {
 
     // Validate the GMCP package
     switch (package) {
-
+    // Reply to the client
     case GMCP_PKG_CORE_HELLO:
-	// Cache the data
+	gmcp_cache_filter(package, json_parse(value));
+
+	gmcp_output(GMCP_PKG_CLIENT_GUI, ([
+	    GMCP_KEY_CLIENT_GUI_VERSION: GMCP_VALUE_CLIENT_GUI_VERSION
+	    , GMCP_KEY_CLIENT_GUI_URL: GMCP_VALUE_CLIENT_GUI_URL
+	  ]) );
+
+	gmcp_output(GMCP_PKG_CLIENT_MAP, ([
+	    GMCP_KEY_CLIENT_MAP_URL: GMCP_VALUE_CLIENT_MAP_URL
+	  ]) );
+
+	break;
+
+    case GMCP_PKG_CORE_SUPPORTS_SET:
+    case GMCP_PKG_CORE_SUPPORTS_ADD:
+	gmcp_cache_filter(package, json_parse(value));
+
+	if (member(gmcp_cache, GMCP_PKG_CORE_SUPPORTS) > 0) {
+	    gmcp_output(GMCP_PKG_CLIENT_MEDIA, ([
+		GMCP_KEY_CLIENT_MEDIA_URL: GMCP_VALUE_CLIENT_MEDIA_URL_DEFAULT
+	      ]) );
+	}
+
+	break;
+
+    case GMCP_PKG_CORE_SUPPORTS_REMOVE:
 	gmcp_cache_filter(package, json_parse(value));
 	break;
 
-	// Reply to the client
-#if 0
-	gmcp_output(GMCP_PKG_CLIENT_GUI
-	    , sprintf("%s\n%s"
-		, GMCP_KEY_CLIENT_GUI_VERSION
-		, GMCP_VALUE_CLIENT_GUI_URL
-		)
-	    );
-#endif
+    case GMCP_PKG_CORE_KEEPALIVE:
+	// Not yet supported
+	break;
+
+    case GMCP_PKG_CORE_PING:
+	gmcp_cache_filter(package, json_parse(value ? value : "null"));
+	gmcp_output(package, "");
 	break;
     }
 }
@@ -239,23 +244,68 @@ gmcp_cache_filter(string package, mixed gmcp_value) {
     if (gmcp_value) {
 	switch (package) {
 
-	case GMCP_PKG_CLIENT_GUI:
-	    filtered_result = gmcp_value;
-	    break;
-
-	case GMCP_PKG_CLIENT_SOUND:
-	case GMCP_PKG_CLIENT_MUSIC:
-	    filtered_result = gmcp_value;
-	    break;
-
 	case GMCP_PKG_CORE_HELLO:
 	    if (member(gmcp_cache, package) < 1) {
 		gmcp_cache[package] = filtered_result = gmcp_value;
-	    } else filtered_result = parse_cache(package
-		, gmcp_value
-		, ({
+	    } else filtered_result = parse_cache(package, gmcp_value, ({
 		    GMCP_KEY_CORE_HELLO_CLIENT
 		    , GMCP_KEY_CORE_HELLO_VERSION
+		  }));
+	    break;
+
+	case GMCP_PKG_CLIENT_GUI:
+	case GMCP_PKG_CLIENT_MAP:
+	case GMCP_PKG_CLIENT_MEDIA:
+	case GMCP_PKG_CLIENT_MEDIA_LOAD:
+	case GMCP_PKG_CLIENT_MEDIA_PLAY:
+	case GMCP_PKG_CLIENT_MEDIA_STOP:
+	    filtered_result = gmcp_value;
+	    break;
+
+	case GMCP_PKG_CORE_SUPPORTS_SET:
+	case GMCP_PKG_CORE_SUPPORTS_ADD:
+	    foreach (string element : gmcp_value) {
+		string pkg, version;
+
+		if (sscanf(element, "%s %s", pkg, version) == 2) {
+		    if (member(gmcp_cache, GMCP_PKG_CORE_SUPPORTS) < 1) {
+			gmcp_cache[GMCP_PKG_CORE_SUPPORTS] = ([ pkg: version ]);
+		    } else { // Per the standard, we overwrite existing values
+			gmcp_cache[GMCP_PKG_CORE_SUPPORTS][pkg] = version;
+		    }
+		}
+	    }
+
+	    filtered_result = gmcp_cache[GMCP_PKG_CORE_SUPPORTS];
+	    break;
+	case GMCP_PKG_CORE_SUPPORTS_REMOVE:
+	    // Cache cleanup
+	    foreach (string pkg : gmcp_value) {
+		if (member(gmcp_cache, GMCP_PKG_CORE_SUPPORTS) > 0) {
+		    m_delete(gmcp_cache[GMCP_PKG_CORE_SUPPORTS], pkg);
+		}
+	    }
+
+	    filtered_result = gmcp_cache[GMCP_PKG_CORE_SUPPORTS];
+	    break;
+
+	case GMCP_PKG_EXTERNAL_DISCORD_HELLO:
+	    filtered_result = gmcp_value;
+	    break;
+	case GMCP_PKG_EXTERNAL_DISCORD_INFO:
+	    if (member(gmcp_cache, package) < 1) {
+		gmcp_cache[package] = filtered_result = gmcp_value;
+	    } else filtered_result = parse_cache(package, gmcp_value, ({
+		    GMCP_KEY_EXTERNAL_DISCORD_INFO_INVITEURL,
+		    GMCP_KEY_EXTERNAL_DISCORD_INFO_APPLICATIONID
+		  }));
+	    break;
+	case GMCP_PKG_EXTERNAL_DISCORD_STATUS:
+	    if (member(gmcp_cache, package) < 1) {
+		gmcp_cache[package] = filtered_result = gmcp_value;
+	    } else filtered_result = parse_cache(package, gmcp_value, ({
+		    GMCP_KEY_EXTERNAL_DISCORD_STATUS_GAME,
+		    GMCP_KEY_EXTERNAL_DISCORD_STATUS_STARTTIME
 		  }));
 	    break;
 	}
@@ -575,8 +625,8 @@ parse_cache(string package, mixed gmcp, string *keys) {
 /*
 **    Function: gmcp_test
 **
-**     Purpose: Test GMCP from the ZMud specification found at
-**              https://www.zuggsoft.com/zmud/msp.htm.
+**     Purpose: Test GMCP from the MUD Client Sound Protocol  specification found at
+**              https://wiki.mudlet.org/w/Standards:MUD_Client_Media_Protocol.
 **
 **  Parameters: int arg, number of the test.
 **
@@ -585,78 +635,74 @@ parse_cache(string package, mixed gmcp, string *keys) {
 public varargs void gmcp_test(int test) {
     switch (test) {
 	case 0:
-	    // !!SOUND(Off U=https://www.ageofelements.org/sounds)
-	    // This is how we tell our client where to download these files from.
-     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
-		"name" : "Off"
-		, "url": "https:/\/www.ageofelements.org/sounds"
+	    // Preload the tornado.
+     	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_LOAD, ([
+		"name": "weather/tornado.wav"
               ]) );
 	    break;
 	case 1:
-	    // !!MUSIC(wind.wav V=25 L=-1 T="weather")
 	    // The music of wind continuously plays.
-     	    gmcp_output(GMCP_PKG_CLIENT_MUSIC, ([
-		"name": "wind.wav"
-		, "volume": "25"
-		, "length": "-1"
-		, "type": "weather"
+     	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_PLAY, ([
+		"name": "weather/wind.wav"
+		, GMCP_KEY_CLIENT_MEDIA_TYPE: GMCP_VALUE_CLIENT_MEDIA_TYPE_MUSIC
+		, GMCP_KEY_CLIENT_MEDIA_VOLUME: GMCP_VALUE_CLIENT_MEDIA_VOLUME_LOW
+		, GMCP_KEY_CLIENT_MEDIA_LOOPS: GMCP_VALUE_CLIENT_MEDIA_LOOPS_REPEAT
+		, GMCP_KEY_CLIENT_MEDIA_TAG: "weather"
               ]) );
 	    break;
 	case 2:
-	    // !!SOUND(lightning V=25 L=1 T=weather)
 	    // A lightning strike at low volume must be far off.
-     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
-		"name": "lightning"
-		, "volume": 25
-		, "length": "1"
-		, "type": "weather"
+     	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_PLAY, ([
+		"name": "weather/lightning.wav"
+		, GMCP_KEY_CLIENT_MEDIA_TYPE: GMCP_VALUE_CLIENT_MEDIA_TYPE_SOUND
+		, GMCP_KEY_CLIENT_MEDIA_VOLUME: GMCP_VALUE_CLIENT_MEDIA_VOLUME_LOW
+		, GMCP_KEY_CLIENT_MEDIA_LOOPS: GMCP_VALUE_CLIENT_MEDIA_LOOPS_DEFAULT
+		, GMCP_KEY_CLIENT_MEDIA_TAG: "weather"
               ]) );
 	    break;
 	case 3:
-	    // !!SOUND(tornado V=50 L=1 T=weather)
 	    // A tornado is spinning somewhere in the distance.
-     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
-		"name": "tornado"
-		, "volume": "50"
-		, "length": "1"
-		, "type": "weather"
+     	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_PLAY, ([
+		"name": "weather/tornado.wav"
+		, GMCP_KEY_CLIENT_MEDIA_TYPE: GMCP_VALUE_CLIENT_MEDIA_TYPE_SOUND
+		, GMCP_KEY_CLIENT_MEDIA_VOLUME: GMCP_VALUE_CLIENT_MEDIA_VOLUME_DEFAULT
+		, GMCP_KEY_CLIENT_MEDIA_LOOPS: GMCP_VALUE_CLIENT_MEDIA_LOOPS_DEFAULT
+		, GMCP_KEY_CLIENT_MEDIA_TAG: "weather"
               ]) );
 	    break;
 	case 4:
-	    // !!SOUND(lightning V=75 L=2 T=weather)
 	    // Two back-to-back lightning strikes at high volume!
-     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
-		"name": "lightning"
-		, "volume": "100"
-		, "length": 2
-		, "type": "weather"
+     	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_PLAY, ([
+		"name": "weather/lightning.wav"
+		, GMCP_KEY_CLIENT_MEDIA_TYPE: GMCP_VALUE_CLIENT_MEDIA_TYPE_SOUND
+		, GMCP_KEY_CLIENT_MEDIA_VOLUME: GMCP_VALUE_CLIENT_MEDIA_VOLUME_MAX
+		, GMCP_KEY_CLIENT_MEDIA_LOOPS: 2
+		, GMCP_KEY_CLIENT_MEDIA_TAG: "weather"
               ]) );
 	    break;
 	case 5:
-	    // !!SOUND(tornado V=75 L=1 T=weather)
 	    // High volume tornado!
-     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
-		"name": "tornado"
-		, "volume": "75"
-		, "length": "1"
-		, "type": "weather"
+     	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_PLAY, ([
+		"name": "weather/tornado.wav"
+		, GMCP_KEY_CLIENT_MEDIA_TYPE: GMCP_VALUE_CLIENT_MEDIA_TYPE_SOUND
+		, GMCP_KEY_CLIENT_MEDIA_VOLUME: GMCP_VALUE_CLIENT_MEDIA_VOLUME_HIGH
+		, GMCP_KEY_CLIENT_MEDIA_LOOPS: GMCP_VALUE_CLIENT_MEDIA_LOOPS_DEFAULT
+		, GMCP_KEY_CLIENT_MEDIA_TAG: "weather"
               ]) );
 	    break;
 	case 6:
-	    // !!SOUND(lightning V=100 L=1 T=weather)
 	    // Very loud lightning!
-     	    gmcp_output(GMCP_PKG_CLIENT_SOUND, ([
-		"name": "lightning"
-		, "volume": "100"
-		, "length": "1"
-		, "type": "weather"
+     	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_PLAY, ([
+		"name": "weather/lightning.wav"
+		, GMCP_KEY_CLIENT_MEDIA_TYPE: GMCP_VALUE_CLIENT_MEDIA_TYPE_SOUND
+		, GMCP_KEY_CLIENT_MEDIA_VOLUME: GMCP_VALUE_CLIENT_MEDIA_VOLUME_HIGH
+		, GMCP_KEY_CLIENT_MEDIA_LOOPS: GMCP_VALUE_CLIENT_MEDIA_LOOPS_DEFAULT
+		, GMCP_KEY_CLIENT_MEDIA_TAG: "weather"
               ]) );
 	    break;
 	case 7:
-	    // !!MUSIC(Off)
 	    // This stops the repeating wind sound
-     	    gmcp_output(GMCP_PKG_CLIENT_MUSIC, ([
-		"name": "Off"
+     	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_STOP, ([
               ]) );
 	    break;
     }
