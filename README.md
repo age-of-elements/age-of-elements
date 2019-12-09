@@ -5,10 +5,11 @@
 
 Age of Elements is primarily being used at this time to build up examples of [game telnet protocols](https://github.com/age-of-elements/age-of-elements/tree/master/obj/login), such as:
 
-* Generic Mud Communication Protocol (GMCP)
-* Mud Server Status Protocol (MSSP)
-* Mud eXtension Protocol (MXP)
-* Mud Sound Protocol (MSP)
+* [Generic Mud Communication Protocol](http://www.gammon.com.au/gmcp) (GMCP)
+* [Mud Server Status Protocol](https://tintin.sourceforge.io/protocols/mssp/) (MSSP)
+* [Mud eXtension Protocol](http://www.gammon.com.au/mushclient/addingservermxp.htm) (MXP)
+* [Mud Sound Protocol](https://www.zuggsoft.com/zmud/msp.htm) (MSP)
+* [Mud Client Media Protocol](https://wiki.mudlet.org/w/Standards:MUD_Client_Media_Protocol) (MCMP)
 
 In time, we'll add in examples of a [Mudlet](https://mudlet.org) GUI and how to send mapper data from inside the game.
 
