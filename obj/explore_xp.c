@@ -15,12 +15,12 @@ string SaveName;
 string FailMessage;
 string OKMessage;
 
-void set_fail_message( string str)
+void set_fail_message(string str)
 {
     FailMessage = str;
 }
 
-void set_ok_message( string str)
+void set_ok_message(string str)
 {
     OKMessage = str;
 }
@@ -28,24 +28,24 @@ void set_ok_message( string str)
 void set_name(string str)
 {
     string TmpString;
-    if (object_name(previous_object())[0..4] != "/obj" &&
-	!creator(this_object())&&!creator(previous_object())) {
+    if (member(({"/obj", "/secure"}), object_name(previous_object())[0..4]) < 0
+	&& !creator(this_object()) && !creator(previous_object())) {
 	write("Illegal usage, Savefile-path is illegal.\n");
 	destruct(this_object());
         return;
     }
-    if ( TmpString = creator( this_object()) || ( TmpString = creator( previous_object())))
+    if (TmpString = creator(this_object()) || (TmpString = creator( previous_object())))
       SaveName = "players/"+TmpString+"/";
     else
       SaveName = "obj/";
-    if ( str)
+    if (str)
 	SaveName=SaveName+str;
     else
 	SaveName=SaveName+DEFAULT_FILE_NAME;
-    if( !restore_object( SaveName)) {
+    if(!restore_object(SaveName)) {
 	SaveString = DELIMITER;
-	save_object( SaveName);
-	log_file( "PlayerLogger",TmpString + " <" + SaveName +"> "+ctime(time())+"\n");
+	save_object(SaveName);
+	log_file("PlayerLogger", TmpString + " <" + SaveName +"> "+ctime(time())+"\n");
     }
 }
 
@@ -61,36 +61,36 @@ int id(string str)
 
 string short()
 {
-    if ( this_player() && this_player()->query_level() >= 20)
+    if (this_player() && this_player()->query_level() >= 20)
 	return "A player logger, name: <"+SaveName+">";
     else
 	return 0;
 }
 
-int PlayerHasVisited( string str)
+int PlayerHasVisited(string str)
 {
-    if ( str)
-	return sscanf( SaveString, "%s"+DELIMITER+str+DELIMITER, str);
+    if (str)
+	return sscanf(SaveString, "%s"+DELIMITER+str+DELIMITER, str);
     else
 	return 0;
 }
 
 void AddPlayerToList( string str)
 {
-    if ( str) {
+    if (str) {
 	SaveString = SaveString+str+DELIMITER;
-	save_object( SaveName);
+	save_object(SaveName);
     }
 }
 
 int AmountOfPlayerXP()
 {
     int Amount, Level;
-    if ( this_player()) {
+    if (this_player()) {
 	Amount = XP_FOR_LEVEL_ONE;
 	Level = this_player()->query_level();
-	while( Level > 0) {
-	    Amount = ( Amount * 13) / 10;
+	while(Level > 0) {
+	    Amount = (Amount * 13) / 10;
 	    Level -= 1;
 	}
 	return Amount;
@@ -100,18 +100,18 @@ int AmountOfPlayerXP()
 
 void init()
 {
-    if ( this_player() && query_ip_number( this_player())) {
-	if (! PlayerHasVisited( this_player()->query_name())) {
-	    if ( OKMessage)
-		tell_object( this_player(), OKMessage);
+    if (this_player() && query_ip_number( this_player())) {
+	if (!PlayerHasVisited(this_player()->query_name())) {
+	    if (OKMessage)
+		tell_object(this_player(), OKMessage);
 	    else
-		tell_object( this_player(), "You feel more experienced.\n");
-	    this_player()->add_exp( AmountOfPlayerXP());
-	    AddPlayerToList( this_player()->query_name());
+		tell_object(this_player(), "You feel more experienced.\n");
+	    this_player()->add_exp(AmountOfPlayerXP());
+	    AddPlayerToList(this_player()->query_name());
 	}
 	else
-	    if ( FailMessage)
-		tell_object( this_player(), FailMessage);
+	    if (FailMessage)
+		tell_object(this_player(), FailMessage);
     }
 }
 
@@ -121,5 +121,5 @@ void reset(int arg)
 	return;
     if(!SaveName)
 	SaveName = DEFAULT_FILE_NAME;
-    set_name( SaveName);
+    set_name(SaveName);
 }
