@@ -168,8 +168,9 @@ Clone the game driver from the repository, detach it from source control, prep t
 ```
 cd ~/
 git clone https://github.com/ldmud/ldmud.git
-cd ldmud
+cd ~/ldmud
 rm -rf .git
+cd ~/ldmud/src
 ./autogen.sh
 cd ~/ldmud/src/settings
 ```
