@@ -33,12 +33,17 @@ The topdirectory contains these files and directories:
 * [Create an AWS Account or Sign-in](https://aws.amazon.com/console/)
 * [Launch a Amazon Linux 2 Instance](https://console.aws.amazon.com/ec2/v2/home?#LaunchInstanceWizard:)
 * _Size_, `t2.micro` for now. 
-* _Security Group_, Type: `SSH` Protocol: `TCP` Port Range: `22` Source: `Your IP` Description: `Developer Access`
-* _Security Group_, Type: `Custom TCP Rule` Protocol: `TCP` Port Range: `7680` Source: `Anywhere` Description: `TELNET to Game`
-* _Security Group_, Type: `Custom UDP Rule` Protocol: `UDP` Port Range: `7681` Source: `Anywhere` Description: `API to Game`
-* _Security Group_, Type: `Custom TCP Rule` Protocol: `TCP` Port Range: `8680` Source: `Anywhere` Description: `TLS Tunnel to Game`
-* _Security Group_, Type: `HTTP` Protocol: `TCP` Port Range: `80` Source: `Anywhere` Description: `Web Server`
-* _Security Group_, Type: `HTTPS` Protocol: `TCP` Port Range: `443` Source: `Anywhere` Description: `Web Server`
+* _Security Groups:_
+
+| Type             | Protocol | Port Range | Source   | Description        |
+|:----------------:|:--------:|:---------- |:-------- |:------------------ |
+| SSH              | TCP      | 22         | Your IP  | Developer Access   |
+| Custom TCP Rule  | TCP      | 7680       | Anywhere | TELNET to Game     |
+| Custom UDP Rule  | UDP      | 7681       | Anywhere | API to Game        |
+| Custom TCP Rule  | TCP      | 8680       | Anywhere | TLS Tunnel to Game |
+| HTTP             | TCP      | 80         | Anywhere | Webserver          |
+| HTTPS            | TCP      | 443        | Anywhere | Webserver          |
+
 * [Connect with SSH to your instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
 ```
 ssh -i <path to your key name>.pem ec2-user@<instance public ip>.compute-1.amazonaws.com
