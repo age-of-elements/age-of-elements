@@ -169,6 +169,7 @@ Clone the game driver from the repository, detach it from source control, prep t
 cd ~/
 git clone https://github.com/ldmud/ldmud.git
 cd ~/ldmud
+git checkout 3.5.99
 rm -rf .git
 cd ~/ldmud/src
 ./autogen.sh
@@ -207,7 +208,6 @@ Run the configuration script, compile then install the game driver.
 ```
 cd ~/ldmud/src
 ./configure --prefix=/home/ec2-user/ldmud --libdir=/home/ec2-user/ldmud/age-of-elements --with-setting=aoe
-settings/aoe
 make
 make install
 make install-all
