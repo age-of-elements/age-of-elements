@@ -163,13 +163,27 @@ sudo yum -y install json-c-devel
 sudo yum -y install libxml2-devel
 sudo yum -y install openssl-devel
 ```
+##### Install json-c #####
+```
+git clone https://github.com/json-c/json-c.git
+cd json-c
+sh autogen.sh
+./configure
+make
+make install
+```
+Use `nano` or `vi` to update a file called `/etc/ld.so.conf`.
+```perl
+/usr/local/lib
+```
+Update the dynamic loader cache by running: `ldconfig`
 #### Download LDMud ####
 Clone the game driver from the repository, detach it from source control, prep the game driver for the operating system.
 ```
 cd ~/
 git clone https://github.com/ldmud/ldmud.git
 cd ~/ldmud
-git checkout 3.5.99
+git checkout 3.6
 rm -rf .git
 cd ~/ldmud/src
 ./autogen.sh
@@ -193,7 +207,7 @@ enable_erq=erq
 enable_compat_mode=no
 enable_strict_euids=no
 enable_use_parse_command=no
-enable_use_mysql=yes
+#enable_use_mysql=yes
 enable_use_pcre=yes
 enable_use_tls=ssl
 enable_use_json=yes
