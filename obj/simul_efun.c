@@ -224,12 +224,12 @@ process_mxp(string message, int mxpEnabled)
     string *original_lines = explode(message, "\n");
     string *processed_lines = allocate(sizeof(original_lines));
 
-    for(line = 0; line < sizeof(original_lines); line++) {
+    for (line = 0; line < sizeof(original_lines); line++) {
 	processed_lines[line] = mxpEnabled ? MXPMODE(1) : "";
 
         length = sizeof(original_lines[line]);
 
-        for(i = 0; i < length; i++) {
+        for (i = 0; i < length; i++) {
             if (inTag) { /* in a tag, eg. <send> */
                 if (original_lines[line][i..i] == MXP_END) {
                     inTag = 0;

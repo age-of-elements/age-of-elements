@@ -76,7 +76,10 @@ init_mxp() {
     write(MXPMODE(6));
 
     write(MXPTAG("!-- Set up MXP elements --"));
-
-    // Exit tag
-    write(MXPTAG("!ELEMENT Ex '<send>' FLAG=RoomExit"));
+    write(MXPTAG("!ELEMENT RNum FLAG=\"RoomNum\" ATT=\"id\" EMPTY"));
+    write(MXPTAG("!ELEMENT RName FLAG=\"RoomName\""));
+    write(MXPTAG("!ELEMENT RDesc FLAG=\"RoomDesc\""));
+    write(MXPTAG("!ELEMENT RExits FLAG=\"RoomExit\""));
+    write(MXPTAG("!ELEMENT Prompt FLAG=\"Prompt\""));
+    write(MXPTAG("!ELEMENT Ex '<send>'"));
 }

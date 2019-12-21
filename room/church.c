@@ -1,4 +1,5 @@
-#include "std.h"
+#include <std.h>
+#include <mxp.h>
 
 int lamp_is_lit, reboot_time, time_from_reset, last_reset_cycle;
 int list_length;
@@ -83,9 +84,11 @@ void long(string str)
 	return;
     }
     write("You are in the local village church.\nThere is a huge pit in the center,\n" +
-	 "and a door in the west wall. There is a button beside the door.\n");
+	"and a door in the west wall. There is a " +
+	MXPTAG("send 'push &text;' HINT='push button'") + "button" + MXPTAG("/send") + " beside the door.\n");
     write("This church has the service of reviving ghosts. Dead people come\n");
-    write("to the church and pray.\n");
+    write("to the church and " +
+	MXPTAG("send &text;") + "pray" + MXPTAG("/send") + ".\n");
     write("There is a clock on the wall.\n");
     write("There is an exit to south.\n");
     if (lamp_is_lit)
@@ -150,7 +153,11 @@ void elevator_arrives()
 }
 
 int pray() {
-    return this_player()->remove_ghost();
+    int ret = this_player()->remove_ghost();
+
+    if (ret == 0) write("You pray. Nothing happens.\n");
+
+    return 1;
 }
 
 int prevent_look_at_inv(string str)

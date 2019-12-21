@@ -72,6 +72,10 @@
 #include <gmcp.h>
 #endif // GMCP_H
 
+#ifndef OBJ_LOGIN_NAWS_C
+#include "/obj/login/naws.c"
+#endif // OBJ_LOGIN_NAWS_C
+
 #ifndef OBJ_LOGIN_MSP_C
 #include "/obj/login/msp.c"
 #endif // OBJ_LOGIN_MSP_C
@@ -94,6 +98,15 @@ public void
 telopt_negotiate(int action, int option, int *optdata) {
     switch (option)
     {
+    case TELOPT_NAWS:
+	if (action == WILL) {
+            binary_message(({IAC, DO, TELOPT_NAWS}));
+	}
+
+	if (action == SB) {
+	    naws_input(optdata);
+	}
+
     case TELOPT_MSP:
 	if (action == DO) {
 	    set_msp(1);

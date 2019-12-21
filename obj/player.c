@@ -80,6 +80,10 @@ static int logon() {
     time_to_save = 500;
     /* enable_commands(); */
 
+    // Encourage the client to send us
+    // Negotiate About Window Size (NAWS)
+    binary_message( ({ IAC, DO, TELOPT_NAWS }), 3);
+
     // Tell the client that we support the
     // Mud Sound Protocol (MSP)
     binary_message( ({ IAC, WILL, TELOPT_MSP }), 3);

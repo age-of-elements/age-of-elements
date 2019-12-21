@@ -53,14 +53,27 @@ int id(string str) {
 
 void long(string str) {
     int i;
+
+    write(MXPTAG("RName"));
+    write(short_desc);
+    write(MXPTAG("/RName"));
+    write("\n\n");
+
     if (set_light(0) == 0){
-       write("It is dark.\n");
-       return;
+	write(MXPTAG("RDesc"));
+	write("It is dark.\n");
+	write(MXPTAG("/RDesc"));
+	return;
     }
+
     if (!str) {
+	write(MXPTAG("RDesc"));
 	write(long_desc);
+	write(MXPTAG("/RDesc"));
+
+	write(MXPTAG("RExits"));
 	if (!dest_dir)
-	    write("    No obvious exits.\n");
+	    write("    No obvious exits.");
 	else {
 	    i = 1;
 	    if (sizeof(dest_dir) == 2)
@@ -76,8 +89,10 @@ void long(string str) {
 		else if (i < sizeof(dest_dir))
 		    write(",");
 	    }
-	    write("\n");
 	}
+
+	write(MXPTAG("/RExits"));
+	write("\n");
 	return;
     }
     if (!items)
