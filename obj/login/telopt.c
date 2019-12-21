@@ -11,6 +11,7 @@
 **
 **      This file process:
 **
+**	* Negotiate About Window Size (NAWS)
 **	* Mud Sound Protocol (MSP)
 **	* Mud Server Status Protocol (MSSP)
 **	* Mud eXtention Protocol (MXP)
@@ -19,26 +20,21 @@
 ** References:
 **
 **	Telnet Negotiation in LDMud:
-**
-**	http://mudflinging.tumblr.com/post/37634529575/gmcp-negotiation-in-ldmud
+**	    http://mudflinging.tumblr.com/post/37634529575/gmcp-negotiation-in-ldmud
 **
 **	MSP:
-**
-**	https://www.zuggsoft.com/zmud/msp.htm
+**	    https://www.zuggsoft.com/zmud/msp.htm
 **
 **	MSSP:
-**
-**	https://tintin.sourceforge.io/protocols/mssp/
+**	    https://tintin.sourceforge.io/protocols/mssp/
 **
 **	MXP:
-**
-**	https://www.gammon.com.au/mushclient/addingservermxp.htm
+**	    https://www.gammon.com.au/mushclient/addingservermxp.htm
 **
 **	GMCP:
-**
-**	https://www.gammon.com.au/gmcp
-**	http://www.aardwolf.com/wiki/index.php/Clients/GMCP
-**	http://nexus.ironrealms.com/GMCP
+**	    https://www.gammon.com.au/gmcp
+**	    http://www.aardwolf.com/wiki/index.php/Clients/GMCP
+**	    http://nexus.ironrealms.com/GMCP
 **
 ** See Also:
 **
@@ -46,6 +42,7 @@
 **	/include/mssp.h
 **	/include/mxp.h
 **	/include/gmcp.h
+**      /obj/login/naws.c
 **      /obj/login/msp.c
 **      /obj/login/mssp.c
 **      /obj/login/mxp.c
