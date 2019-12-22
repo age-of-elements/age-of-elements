@@ -28,6 +28,9 @@
 **	/obj/login/telopt.c
 */
 
+#ifndef OBJ_LOGIN_GMCP_C
+#define OBJ_LOGIN_GMCP_C
+
 #ifndef LPC_LPCTYPES_H
 #include <sys/lpctypes.h>
 #endif // LPC_LPCTYPES_H
@@ -39,8 +42,6 @@
 #ifndef GMCP_H
 #include <gmcp.h>
 #endif // GMCP_H
-
-#define OBJ_LOGIN_GMCP_C
 
 nosave mapping gmcp_cache; /* Stores the GMCP we have collected */
 
@@ -707,3 +708,4 @@ public varargs void gmcp_test(int test) {
 	    break;
     }
 }
+#endif // OBJ_LOGIN_GMCP_C

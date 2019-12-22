@@ -3,6 +3,7 @@
 #include "living.h"
 
 #include "/obj/login/telopt.c"
+#include "/obj/login/catch.c"
 
 #define WIZ 1
 #define ARCH 0
@@ -78,19 +79,10 @@ string version() {
 
 static int logon() {
     time_to_save = 500;
-    /* enable_commands(); */
 
     // Encourage the client to send us
     // Negotiate About Window Size (NAWS)
     binary_message( ({ IAC, DO, TELOPT_NAWS }), 3);
-
-    // Tell the client that we support the
-    // Mud Sound Protocol (MSP)
-    binary_message( ({ IAC, WILL, TELOPT_MSP }), 3);
-
-    // Tell the client that we support the
-    // Mud Server Status Protocol (MSSP)
-    binary_message( ({ IAC, WILL, TELOPT_MSSP }), 3);
 
     // Tell the client that we support the
     // Mud eXtension Protocol (MXP)
@@ -100,10 +92,19 @@ static int logon() {
     // Generic Mud Communication Protocol (GMCP)
     binary_message( ({ IAC, WILL, TELOPT_GMCP }), 3);
 
+    // Tell the client that we support the
+    // Mud Sound Protocol (MSP)
+    binary_message( ({ IAC, WILL, TELOPT_MSP }), 3);
+
+    // Tell the client that we support the
+    // Mud Server Status Protocol (MSSP)
+    binary_message( ({ IAC, WILL, TELOPT_MSSP }), 3);
+
     cat("/WELCOME");
     write("Version: " + version() + "\n");
     input_to("logon2", INPUT_PROMPT, "What is your name: ");
     call_out("time_out", 120);
+
     return 1;
 }
 
@@ -141,7 +142,7 @@ static void try_throw_out(string str)
         destruct(other_copy);        /* Is this really needed ? */
     other_copy = 0;
     move_player_to_start(ob);
-
+/*
     gmcp_test(0);
     gmcp_test(1);
     call_out(#'gmcp_test, 10, 2);
@@ -150,6 +151,7 @@ static void try_throw_out(string str)
     call_out(#'gmcp_test, 40, 5);
     call_out(#'gmcp_test, 50, 6);
     call_out(#'gmcp_test, 60, 7);
+*/
 #ifdef LOG_ENTER
     log_file("ENTER", " (throw)\n");
 #endif
@@ -1218,7 +1220,7 @@ static void check_password(string p)
         return;
     }
     move_player_to_start(0);
-
+/*
     gmcp_test(0);
     gmcp_test(1);
     call_out(#'gmcp_test, 10, 2);
@@ -1227,6 +1229,7 @@ static void check_password(string p)
     call_out(#'gmcp_test, 40, 5);
     call_out(#'gmcp_test, 50, 6);
     call_out(#'gmcp_test, 60, 7);
+*/
 #ifdef LOG_ENTER
     log_file("ENTER", cap_name + ", " + ctime(time())[4..15]+ ".\n");
 #endif

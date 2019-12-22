@@ -19,11 +19,12 @@
 **	/obj/login/telopt.c
 */
 
+#ifndef OBJ_LOGIN_MSSP_C
+#define OBJ_LOGIN_MSSP_C
+
 #ifndef MSSP_H
 #include <mssp.h>
 #endif // MSSP_H
-
-#define OBJ_LOGIN_MSSP_C
 
 static int does_mssp = 0;
 
@@ -207,3 +208,4 @@ mssp_message() {
 
     return mssp_message;
 }
+#endif // OBJ_LOGIN_MSSP_C

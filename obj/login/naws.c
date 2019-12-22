@@ -17,6 +17,9 @@
 **	/obj/login/telopt.c
 */
 
+#ifndef OBJ_LOGIN_NAWS_C
+#define OBJ_LOGIN_NAWS_C
+
 #ifndef LPC_LPCTYPES_H
 #include <sys/lpctypes.h>
 #endif // LPC_LPCTYPES_H
@@ -24,8 +27,6 @@
 #ifndef TELNET_H__
 #include <sys/telnet.h>
 #endif // TELNET_H__
-
-#define OBJ_LOGIN_NAWS_C
 
 nosave int term_columns = 80;
 nosave int term_rows = 24;
@@ -76,3 +77,4 @@ naws_input(int *optdata) {
 	}
     }
 }
+#endif // OBJ_LOGIN_NAWS_C

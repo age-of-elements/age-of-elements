@@ -1,5 +1,5 @@
 /*
-** /basic/player/telopt.c
+** /obj/login/telopt.c
 **
 ** Author: Tamarindo
 **
@@ -49,6 +49,9 @@
 **      /obj/login/gmcp.c
 */
 
+#ifndef OBJ_LOGIN_TELOPT_C
+#define OBJ_LOGIN_TELOPT_C
+
 #ifndef TELNET_H__
 #include <sys/telnet.h>
 #endif // TELNET_H__
@@ -88,8 +91,6 @@
 #ifndef OBJ_LOGIN_GMCP_C
 #include "/obj/login/gmcp.c"
 #endif // OBJ_LOGIN_GMCP_C
-
-#define OBJ_LOGIN_TELOPT_C
 
 public void
 telopt_negotiate(int action, int option, int *optdata) {
@@ -158,3 +159,4 @@ telopt_negotiate(int action, int option, int *optdata) {
 	}
     }
 }
+#endif // OBJ_LOGIN_TELOPT_C

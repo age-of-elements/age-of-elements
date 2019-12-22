@@ -18,6 +18,9 @@
 **      /obj/login/telopt.c
 */
 
+#ifndef OBJ_LOGIN_MSP_C
+#define OBJ_LOGIN_MSP_C
+
 #ifndef __TELNET_H
 #include <sys/telnet.h>
 #endif // __TELNET_H
@@ -25,8 +28,6 @@
 #ifndef MSP_H
 #include <msp.h>
 #endif // MSP_H
-
-#define OBJ_LOGIN_MSP_C
 
 static int does_msp = 0;
 
@@ -191,3 +192,4 @@ public varargs void msp_test(int test) {
 	    break;
     }
 }
+#endif // OBJ_LOGIN_MSP_C

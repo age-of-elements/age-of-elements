@@ -18,6 +18,9 @@
 **      /obj/login/telopt.c
 */
 
+#ifndef OBJ_LOGIN_MXP_C
+#define OBJ_LOGIN_MXP_C
+
 #ifndef TELNET_H__
 #include <sys/telnet.h>
 #endif // TELNET_H__
@@ -26,13 +29,12 @@
 #include <mxp.h>
 #endif // MXP_H
 
-#define OBJ_LOGIN_MXP_C
-
 static int does_mxp = 0;
 
 private void set_mxp(int arg);
 public nomask int does_mxp();
 private void init_mxp();
+private string process_mxp(string message);
 
 /*
 **    Function: set_mxp
@@ -61,11 +63,11 @@ does_mxp() {
 }
 
 /*
-**    Function: init_mxp
+** Function: init_mxp
 **
-**     Purpose: Set up MXP Elements.
+**  Purpose: Set up MXP Elements.
 **
-**     Returns: void
+**  Returns: void
 */
 private void
 init_mxp() {
@@ -73,13 +75,95 @@ init_mxp() {
     binary_message(({IAC, SB, TELOPT_MXP, IAC, SE}));
 
     // Switch to "permanent secure" mode, MXP tags now enabled
-    write(MXPMODE(6));
+    write(process_mxp(MXPMODE(6)));
 
-    write(MXPTAG("!-- Set up MXP elements --"));
-    write(MXPTAG("!ELEMENT RNum FLAG=\"RoomNum\" ATT=\"id\" EMPTY"));
-    write(MXPTAG("!ELEMENT RName FLAG=\"RoomName\""));
-    write(MXPTAG("!ELEMENT RDesc FLAG=\"RoomDesc\""));
-    write(MXPTAG("!ELEMENT RExits FLAG=\"RoomExit\""));
-    write(MXPTAG("!ELEMENT Prompt FLAG=\"Prompt\""));
-    write(MXPTAG("!ELEMENT Ex '<send>'"));
+    write(process_mxp(MXPTAG("!-- Set up MXP elements --")));
+    write(process_mxp(MXPTAG("!ELEMENT RNum FLAG=\"RoomNum\" ATT=\"id\" EMPTY")));
+    write(process_mxp(MXPTAG("!ELEMENT RName FLAG=\"RoomName\"")));
+    write(process_mxp(MXPTAG("!ELEMENT RDesc FLAG=\"RoomDesc\"")));
+    write(process_mxp(MXPTAG("!ELEMENT RExits FLAG=\"RoomExit\"")));
+    write(process_mxp(MXPTAG("!ELEMENT Prompt FLAG=\"Prompt\"")));
+    write(process_mxp(MXPTAG("!ELEMENT Ex '<send>'")));
 }
+
+/*
+**   Function: process_mxp
+**
+**    Purpose: Process MXP.
+**
+** Parameters: string message, the message to transform
+**
+**    Returns: string
+*/
+private string
+process_mxp(string message) {
+    int line = 0;
+    int length = 0;
+    int i = 0;
+    int inTag = 0;
+    int inEntity = 0;
+
+    string *original_lines = explode(message, "\n");
+    string *processed_lines = allocate(sizeof(original_lines));
+
+    for (line = 0; line < sizeof(original_lines); line++) {
+	processed_lines[line] = does_mxp ? MXPMODE(1) : "";
+
+        length = sizeof(original_lines[line]);
+
+        for (i = 0; i < length; i++) {
+            if (inTag) { /* in a tag, eg. <send> */
+                if (original_lines[line][i..i] == MXP_END) {
+                    inTag = 0;
+
+                    if (does_mxp) {
+                        processed_lines[line] += ">";
+                    }
+                } else if (does_mxp) { /* copy tag only when MXP does_mxp */
+                    processed_lines[line] += original_lines[line][i..i];
+                }
+            } else if (inEntity) { /* in a tag, eg. <send> */
+                if (does_mxp) { /* copy tag only when MXP does_mxp */
+                    processed_lines[line] += original_lines[line][i..i];
+                }
+
+                if (original_lines[line][i..i] == ";") {
+                    inEntity = 0;
+                }
+            } else {
+                if (original_lines[line][i..i] == MXP_BEG) {
+                    inTag = 1;
+
+                    if (does_mxp) {
+                        processed_lines[line] += "<";
+                    }
+                } else if (original_lines[line][i..i] == MXP_END) { /* should not get this case */
+                    processed_lines[line] += ">";
+                } else if (original_lines[line][i..i] == MXP_AMP) {
+                    inEntity = 1;
+
+                    if (does_mxp) {
+                        processed_lines[line] += "<";
+                    }
+                } else if (does_mxp) {
+                    if (original_lines[line][i..i] == "<") {
+                        processed_lines[line] += "&lt;";
+                    } else if (original_lines[line][i..i] == ">") {
+                        processed_lines[line] += "&gt;";
+                    } else if (original_lines[line][i..i] == "&") {
+                        processed_lines[line] += "&amp;";
+                    } else if (original_lines[line][i..i] == "\"") {
+                        processed_lines[line] += "&quot;";
+                    } else {
+                        processed_lines[line] += original_lines[line][i..i];
+                    }
+                } else { /* not MXP - just copy character */
+                    processed_lines[line] += original_lines[line][i..i];
+                }
+            }
+        }
+    }
+
+    return implode(processed_lines, "\n");
+}
+#endif // OBJ_LOGIN_MXP_C
