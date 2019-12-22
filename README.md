@@ -159,7 +159,6 @@ Install the standard developer tools, then tools for mysql, json-c, XML2 and Ope
 ```
 sudo yum groupinstall "Development Tools"
 sudo yum install mysql-devel
-sudo yum -y install json-c-devel
 sudo yum -y install libxml2-devel
 sudo yum -y install openssl-devel
 ```
