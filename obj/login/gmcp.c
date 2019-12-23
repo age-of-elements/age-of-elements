@@ -83,7 +83,7 @@ query_gmcp_cache() {
 ** Function: gmcp_input
 **
 **  Purpose: The telopt_negotiate function routes inbound GMCP messages from
-**               the player's client here for handling.
+**           the player's client here for handling.
 */
 private void
 gmcp_input(int *optdata) {

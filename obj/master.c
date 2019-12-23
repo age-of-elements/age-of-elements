@@ -435,9 +435,22 @@ void inaugurate_master (int arg)
       #'_clone_uids_fun, 'blueprint, 'new_name, ({#'previous_object}) })
                   )
   );
-  set_driver_hook(H_CREATE_SUPER, "reset");
-  set_driver_hook(H_CREATE_OB,    "reset");
-  set_driver_hook(H_CREATE_CLONE, "reset");
+
+  set_driver_hook(H_CREATE_SUPER, 0);
+
+  set_driver_hook(H_CREATE_OB, unbound_lambda( ({ 'x }),
+	({ #'?, ({ #'function_exists, "create", 'x }),
+	  ({ #'call_other, 'x, "create" }),
+	  ({ #'call_other, 'x, "reset", 0 }) }) ));
+
+  set_driver_hook(H_CREATE_CLONE, unbound_lambda( ({ 'x }),
+	({ #'?, ({ #'function_exists, "create", 'x }),
+	  ({ #'call_other, 'x, "create" }),
+	  ({ #'call_other, 'x, "reset", 0 }) }) ));
+
+  //set_driver_hook(H_CREATE_SUPER, "reset");
+  //set_driver_hook(H_CREATE_OB,    "reset");
+  //set_driver_hook(H_CREATE_CLONE, "reset");
     /* PLAIN: Non-compat muds like OSB use "create" or other functions
      * for the above.
      */

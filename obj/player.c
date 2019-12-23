@@ -81,6 +81,10 @@ static int logon() {
     time_to_save = 500;
 
     // Encourage the client to send us
+    // Mud Termainal Type Standard (MTTS)
+    binary_message( ({ IAC, DO, TELOPT_TTYPE }), 3);
+
+    // Encourage the client to send us
     // Negotiate About Window Size (NAWS)
     binary_message( ({ IAC, DO, TELOPT_NAWS }), 3);
 

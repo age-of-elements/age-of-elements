@@ -1,7 +1,11 @@
 inherit "room/room";
 
+#if 1
+void create() {
+#else
 void reset(int arg) {
     if (arg) return;
+#endif
 
     set_light(1);
     short_desc = "Village green";

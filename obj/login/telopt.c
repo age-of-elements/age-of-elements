@@ -22,6 +22,9 @@
 **	Telnet Negotiation in LDMud:
 **	    http://mudflinging.tumblr.com/post/37634529575/gmcp-negotiation-in-ldmud
 **
+**	MTTS:
+**	    https://tintin.sourceforge.io/protocols/mtts/
+**
 **	MSP:
 **	    https://www.zuggsoft.com/zmud/msp.htm
 **
@@ -38,6 +41,7 @@
 **
 ** See Also:
 **
+**	/include/mtts.h
 **	/include/msp.h
 **	/include/mssp.h
 **	/include/mxp.h
@@ -56,6 +60,10 @@
 #include <sys/telnet.h>
 #endif // TELNET_H__
 
+#ifndef MTTS_H
+#include <mtts.h>
+#endif // MTTS_H
+
 #ifndef MSP_H
 #include <msp.h>
 #endif // MSP_H
@@ -71,6 +79,10 @@
 #ifndef GMCP_H
 #include <gmcp.h>
 #endif // GMCP_H
+
+#ifndef OBJ_LOGIN_MTTS_C
+#include "/obj/login/mtts.c"
+#endif // OBJ_LOGIN_MTTS_C
 
 #ifndef OBJ_LOGIN_NAWS_C
 #include "/obj/login/naws.c"
@@ -96,6 +108,28 @@ public void
 telopt_negotiate(int action, int option, int *optdata) {
     switch (option)
     {
+    case TELOPT_TTYPE:
+	if (action == WILL) {
+            binary_message(({IAC, SB, TELOPT_TTYPE, MTTS_SEND, IAC, SE}));
+	}
+
+        if (action == SB) {
+            mtts_input(optdata);
+        }
+	break;
+
+    case TELOPT_NEWENV:
+	if (action == WILL) {
+            binary_message(({IAC, SB, TELOPT_NEWENV, MTTS_SEND, MTTS_VAR}));
+	    binary_message(to_bytes("IPADDRESS", "UTF-8"));
+	    binary_message(({IAC, SE}));
+	}
+
+        if (action == SB) {
+            newenv_input(optdata);
+        }
+	break;
+
     case TELOPT_NAWS:
 	if (action == WILL) {
             binary_message(({IAC, DO, TELOPT_NAWS}));
@@ -104,6 +138,7 @@ telopt_negotiate(int action, int option, int *optdata) {
 	if (action == SB) {
 	    naws_input(optdata);
 	}
+	break;
 
     case TELOPT_MSP:
 	if (action == DO) {

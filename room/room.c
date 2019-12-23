@@ -54,22 +54,15 @@ int id(string str) {
 void long(string str) {
     int i;
 
-    write(MXPTAG("RName"));
-    write(short_desc);
-    write(MXPTAG("/RName"));
-    write("\n\n");
+    write(sprintf("%s%s%s\n", MXPTAG("RName"), short_desc, MXPTAG("/RName")));
 
     if (set_light(0) == 0){
-	write(MXPTAG("RDesc"));
-	write("It is dark.\n");
-	write(MXPTAG("/RDesc"));
+	write(sprintf("%sIt is dark.%s\n", MXPTAG("RDesc"), MXPTAG("/RDesc")));
 	return;
     }
 
     if (!str) {
-	write(MXPTAG("RDesc"));
-	write(long_desc);
-	write(MXPTAG("/RDesc"));
+	write(sprintf("%s%s%s\n", MXPTAG("RDesc"), long_desc, MXPTAG("/RDesc")));
 
 	write(MXPTAG("RExits"));
 	if (!dest_dir)
