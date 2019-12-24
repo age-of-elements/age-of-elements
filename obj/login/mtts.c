@@ -13,6 +13,11 @@
 **
 **	https://tintin.sourceforge.io/protocols/mtts/
 **
+** Notes:
+**
+**	TinTin++, MUSH Client and Mud Portal are the only
+**	known clients supporting this today.
+**
 ** See Also:
 **
 **	/obj/login/telopt.c
@@ -110,7 +115,7 @@ query_term_type() {
 **                                     semicolon notation.
 **
 **             The client adds up the numbers of all supported terminal
-**             capabilities and print it as ASCII in decimal notation. In the
+**             capabilities and prints it as ASCII in decimal notation. In the
 **             case that a client supports ANSI, UTF-8, as well as 256 COLORS,
 **             it should respond with "MTTS 13", which is the sum of 1, 4, and
 **             8. The reporting of UTF-8 should be implemented as a user setting,

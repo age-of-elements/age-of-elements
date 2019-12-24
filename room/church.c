@@ -84,11 +84,11 @@ void long(string str)
 	return;
     }
     write("You are in the local village church.\nThere is a huge pit in the center,\n" +
-	"and a door in the west wall. There is a " +
-	MXPTAG("send 'push &text;' HINT='push button'") + "button" + MXPTAG("/send") + " beside the door.\n");
+	"and a door in the west wall. There is a %^BOLD%^%^WHITE%^" +
+	MXPTAG("send 'push &text;' HINT='push button'") + "button" + MXPTAG("/send") + "%^RESET%^ beside the door.\n");
     write("This church has the service of reviving ghosts. Dead people come\n");
-    write("to the church and " +
-	MXPTAG("send &text;") + "pray" + MXPTAG("/send") + ".\n");
+    write("to the church and %^BOLD%^%^WHITE%^" +
+	MXPTAG("send &text;") + "pray" + MXPTAG("/send") + "%^RESET%^.\n");
     write("There is a clock on the wall.\n");
     write("There is an exit to south.\n");
     if (lamp_is_lit)

@@ -3,7 +3,7 @@
 #include "living.h"
 
 #include "/obj/login/telopt.c"
-#include "/obj/login/catch.c"
+#include "/obj/login/interface.c"
 
 #define WIZ 1
 #define ARCH 0
@@ -271,6 +271,7 @@ void reset(int arg) {
     title = "the title less";
     al_title = "neutral";
     gender = -1; /* Illegal value, so it will be changed! */
+    set_terminal("xterm-256color");
 }
 
 /* Enable other objects to query our hit point. */

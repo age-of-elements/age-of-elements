@@ -1,20 +1,62 @@
 /*
-** /obj/login/catch.c
+** /obj/login/interface.c
 **
 **  Author: Tamarindo
 **
 **    Date: December 2019
 **
-** Purpose: This file handles communication between livings.
+** Purpose: This file handles communication.
 **
 */
+#ifndef OBJ_LOGIN_INTERFACE_C
+#define OBJ_LOGIN_INTERFACE_C
 
-#ifndef OBJ_LOGIN_CATCH_C
-#define OBJ_LOGIN_CATCH_C
+#include <daemons.h>
 
 #ifndef OBJ_LOGIN_MXP_C
 #include "/obj/login/mxp.c"
 #endif // OBJ_LOGIN_MXP_C
+
+private string terminal;
+private nosave mapping terminal_info;
+
+public string get_terminal();
+public void set_terminal(string arg);
+
+public string
+get_terminal() {
+    return terminal;
+}
+
+public void
+set_terminal(string arg) {
+    switch (arg) {
+
+    case "ansi":
+        terminal = "ansi";
+	break;
+
+    case "xterm-grey":
+	terminal = "xterm-grey";
+        break;
+
+    case "xterm-256color":
+	terminal = "xterm-256color";
+        break;
+
+    case "unknown":
+	terminal = "unknown";
+        break;
+
+    default:
+        log_file("TERMINALS", "Unknown terminal type: " + arg + "\n");
+        break;
+    }
+
+    if (!terminal_info || terminal != arg) {
+        terminal_info = TERMINAL_D->query_terminal_info(terminal);
+    }
+}
 
 /*
 **   Function: catch_msg
@@ -52,7 +94,6 @@ void catch_msg(mixed msg, object obj) {
 **    Returns: void
 */
 void catch_tell(string msg) {
-    write(process_mxp(msg));
+    write(terminal_colour(process_mxp(msg), terminal_info));
 }
-#endif // OBJ_LOGIN_CATCH_C
-
+#endif // OBJ_LOGIN_INTERFACE_C
