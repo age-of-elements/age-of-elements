@@ -54,8 +54,6 @@ int id(string str) {
 void long(string str) {
     int i;
 
-    write(sprintf("%^LIGHTGREEN%^%s%s%s%^RESET%^\n", MXPTAG("RName"), short_desc, MXPTAG("/RName")));
-
     if (set_light(0) == 0){
 	write(sprintf("%sIt is dark.%s\n", MXPTAG("RDesc"), MXPTAG("/RDesc")));
 	return;

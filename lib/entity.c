@@ -1,8 +1,24 @@
+#define F_ENTITY_RESET_USED        1
+#define F_ENTITY_INIT_USED         2
+
+private nosave int flags;
+private nosave int lumens;
 private string name;
 private string * aliases;
 private mixed brief;
 private mixed description;
-private nosave int lumens;
+
+int
+get_lumens()
+{
+    return lumens;
+}
+
+void
+set_lumens(int arg)
+{
+    lumens = arg;
+}
 
 string
 get_name()
@@ -111,18 +127,6 @@ set_description(mixed arg)
 }
 
 int
-get_lumens()
-{
-    return lumens;
-}
-
-void
-set_lumens(int arg)
-{
-    lumens = arg;
-}
-
-int
 id(string arg)
 {
     if (!arg || !name) {
@@ -139,14 +143,38 @@ id(string arg)
 void
 create()
 {
+    if (function_exists("reset_entity", this_object())) {
+	flags |= F_ENTITY_RESET_USED;
+    }
+
+    this_object()->create_room();
+
+    if (function_exists("init_entity", this_object())) {
+	flags |= F_ENTITY_INIT_USED;
+    }
 }
 
 void
 reset()
 {
+    if (flags & F_ENTITY_RESET_USED) {
+	this_object()->reset_entity();
+    }
+
+    // reset_entity() may call destruct()
+    if (!this_object()) {
+       return;
+    }
 }
 
 void
 init()
 {
+    if (flags & F_ENTITY_INIT_USED) {
+	this_object()->init_entity();
+    }
+
+    if (!this_player()) {
+	return;
+    }
 }

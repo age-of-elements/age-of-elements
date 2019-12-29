@@ -94,6 +94,6 @@ void catch_msg(mixed msg, object obj) {
 **    Returns: void
 */
 void catch_tell(string msg) {
-    write(terminal_colour(process_mxp(msg), terminal_info));
+    write(terminal_colour(process_mxp(msg, does_mxp), terminal_info));
 }
 #endif // OBJ_LOGIN_INTERFACE_C

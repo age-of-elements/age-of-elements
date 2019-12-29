@@ -23,7 +23,7 @@
 #include "/sys/object_info.h"
 #include "/sys/driver_info.h"
 
-#include "/include/mxp.h"
+#include "/secure/simul_efun/process_mxp.c"
 
 mapping living_name_m, name_living_m;
   /* Living -> Name and Name -> Living mappings.

@@ -844,10 +844,12 @@ void set_alignment(string al) {
 }
 
 static int test_dark() {
+#if 0
     if (set_light(0) <= 0) {
         write("It is too dark.\n");
         return 1;
     }
+#endif
     return 0;
 }
 
@@ -1133,6 +1135,15 @@ int look(string str) {
     if (test_dark())
         return 1;
     if (!str) {
+#if 1
+	mixed desc = environment()->get_description();
+
+	if (stringp(desc)) {
+	    write(sprintf("%s\n", desc));
+	} else if (closurep(desc)) {
+	    write(sprintf("%s\n", funcall(desc)));
+	}
+#endif
         environment()->long();
         ob = first_inventory(environment());
         max = MAX_LIST;

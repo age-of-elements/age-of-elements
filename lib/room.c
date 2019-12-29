@@ -34,7 +34,7 @@ get_brief()
 void
 set_brief(mixed arg)
 {
-    if (!stringp(arg) || !closurep(arg)) {
+    if (!stringp(arg) && !closurep(arg)) {
 	return;
     }
 
@@ -54,7 +54,7 @@ get_description()
 void
 set_description(mixed arg)
 {
-    if (!stringp(arg) || !closurep(arg)) {
+    if (!stringp(arg) && !closurep(arg)) {
 	return;
     }
 
@@ -122,7 +122,7 @@ remove_exit(string arg)
 mapping
 get_items()
 {
-    mapping ret = copy(items);
+    mapping ret = deep_copy(items);
 
     if (ret && mappingp(ret) && sizeof(ret)) {
 	string synonym;
@@ -334,11 +334,11 @@ create()
 	flags |= F_ROOM_RESET_USED;
     }
 
-    this_object()->create_room();
-
     if (function_exists("init_room", this_object())) {
 	flags |= F_ROOM_INIT_USED;
     }
+
+    this_object()->create_room();
 }
 
 void
@@ -366,8 +366,6 @@ init()
     if (!this_player()) {
 	return;
     }
-
-
 }
 
 void
@@ -376,7 +374,7 @@ heart_beat()
 }
 
 int
-search_cmd(string str)
+search_cmd(string arg)
 {
     tell_object(this_player()
 	, "You search around, but did not find any interesting discoveries.");
@@ -385,7 +383,7 @@ search_cmd(string str)
 }
 
 int
-listen_cmd(string str)
+listen_cmd(string arg)
 {
     tell_object(this_player()
 	, "You listen intently, but did not hear any interesting sounds.");
@@ -394,7 +392,7 @@ listen_cmd(string str)
 }
 
 int
-smell_cmd(string str)
+smell_cmd(string arg)
 {
     tell_object(this_player()
 	, "You sniff vigorously, but did not detect any interesting scents.");

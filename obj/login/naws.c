@@ -32,31 +32,31 @@ nosave int term_columns = 80;
 nosave int term_rows = 24;
 
 // Prototypes
-public nomask int query_term_columns();
-public nomask int query_term_rows();
+public nomask int get_term_columns();
+public nomask int get_term_rows();
 private void naws_input(int *optdata);
 
 /*
-** Function: query_term_columns
+** Function: get_term_columns
 **
 **  Purpose: Query the number of columns the client displays.
 **
 **  Returns: int, number of columns.
 */
 public nomask int
-query_term_columns() {
+get_term_columns() {
     return term_columns;
 }
 
 /*
-** Function: query_term_rows
+** Function: get_term_rows
 **
 **  Purpose: Query the number of rows the client displays.
 **
 **  Returns: int, number of rows.
 */
 public nomask int
-query_term_rows() {
+get_term_rows() {
     return term_rows;
 }
 

@@ -1,4 +1,5 @@
 #include "log.h"
+#include <mxp.h>
 
 #define KILL_NEUTRAL_ALIGNMENT		10
 #define ADJ_ALIGNMENT(al)		((-al - KILL_NEUTRAL_ALIGNMENT)/4)
@@ -117,6 +118,10 @@ string query_gender_string();
 string query_stats();
 void show_age();
 
+public int does_mxp() {
+    return 0;
+}
+
 /*
  * This routine is called from objects that moves the player.
  * Special: direction "X" means teleport.
@@ -192,15 +197,131 @@ void move_player(string dir_dest, object optional_dest_ob)
         hunter->attack_object(this_object());
     if (is_npc)
 	return;
+#if 0
     if (!is_light) {
 	write("A dark room.\n");
 	return;
     }
+#endif
     ob = environment(this_object());
-    if (brief)
-	write(ob->short() + ".\n");
-    else
-	ob->long();
+
+    // This section is in transition and will be refactored.
+    mixed _brief = ob->get_brief();
+
+    if (stringp(_brief)) {
+	if (!is_npc) {
+	    this_object()->catch_tell(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+		, MXPTAG("RName")
+		, _brief
+		, MXPTAG("/RName")
+	      ));
+	} else {
+	    write(sprintf("%s.\n", _brief));
+	}
+    } else if (closurep(_brief)) {
+	if (!is_npc) {
+	    this_object()->catch_tell(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+		, MXPTAG("RName")
+		, funcall(_brief)
+		, MXPTAG("/RName")
+	      ));
+	} else {
+	    write(sprintf("%s\n", funcall(_brief)));
+	}
+    } else {
+	if (!is_npc) {
+	    this_object()->catch_tell(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+		, MXPTAG("RName")
+		, ob->short()
+		, MXPTAG("/RName")
+	      ));
+	} else {
+	    write(sprintf("%s\n", ob->short()));
+	}
+    }
+
+    if (!brief) {
+        mixed desc = ob->get_description();
+
+	if (stringp(desc)) {
+	    if (!is_npc) {
+		this_object()->catch_tell(sprintf("%s%s%s\n"
+		    , MXPTAG("RDesc")
+		    , desc
+		    , MXPTAG("/RDesc")
+		  ));
+	    } else {
+		write(sprintf("%s.\n", desc));
+	    }
+	} else if (closurep(desc)) {
+	    if (!is_npc) {
+		this_object()->catch_tell(sprintf("%s%s%s\n"
+		    , MXPTAG("RDesc")
+		    , funcall(desc)
+		    , MXPTAG("/RDesc")
+		  ));
+	    } else {
+		write(sprintf("%s\n", funcall(desc)));
+	    }
+	} else {
+	    if (!is_npc) {
+		this_object()->catch_tell(MXPTAG("RDesc"));
+		ob->long();
+		this_object()->catch_tell(MXPTAG("/RDesc"));
+	    } else {
+		ob->long();
+	    }
+	}
+    }
+
+    mapping _exits = ob->get_exits();
+
+    if (mappingp(_exits)) {
+	int number_of_exits = sizeof(m_indices(_exits));
+	string exit_list;
+
+	if (!number_of_exits) {
+	    exit_list = sprintf("\n    %sThere are no obvious exits.%s\n"
+		, MXPTAG("RExits")
+		, MXPTAG("/RExits")
+	      );
+	} else if (number_of_exits == 1) {
+	    exit_list = sprintf("\n    %sThe only obvious exit is:  %s%s%s.%s\n"
+		, MXPTAG("RExits")
+		, MXPTAG("Ex")
+		, m_indices(_exits)[0]
+		, MXPTAG("/Ex")
+		, MXPTAG("/RExits")
+	      );
+	} else {
+	    foreach (string ex : m_indices(_exits)) {
+		if (!exit_list) {
+		    exit_list = sprintf("\n    %sThe obvious exits are:  %s%s%s"
+			, MXPTAG("RExits")
+			, MXPTAG("Ex")
+			, ex
+			, MXPTAG("/Ex")
+		      );
+		} else if (--number_of_exits > 1) {
+		    exit_list += sprintf(", %s%s%s"
+			, MXPTAG("Ex")
+			, ex
+			, MXPTAG("/Ex")
+		      );
+		} else {
+		    exit_list += sprintf(" and %s%s%s.%s\n"
+			, MXPTAG("Ex")
+			, ex
+			, MXPTAG("/Ex")
+			, MXPTAG("/RExits")
+		      );
+		}
+	    }
+	}
+
+	write(process_mxp(exit_list, does_mxp()));
+    }
+
     for (i=0, ob=first_inventory(ob); ob; ob = next_inventory(ob)) {
 	if (ob != this_object()) {
 	    string short_str;
@@ -247,7 +368,7 @@ int hit_player(int dam) {
     if (hit_point<0) {
 	object corpse;
 	/* We died ! */
-	
+
 	if (!is_npc && !query_ip_number(this_object())) {
 	    /* This player is linkdead. */
 	    write(cap_name + " is not here. You cannot kill a player who is not logged in.\n");
