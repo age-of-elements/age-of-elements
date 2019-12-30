@@ -1,7 +1,5 @@
 inherit "/lib/room";
 
-void reset_room();
-
 void create_room() {
     set_lumens(1);
 

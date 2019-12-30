@@ -420,6 +420,12 @@ reset_transient_objects()
 	string appearmsg = transient_data[2];
 	int reset_chance = transient_data[3];
 
+	// Where someone is using transient_objects outside create_room()
+	if (!ob || (!object_info || objectp(object_info))) {
+	    transient_data = 0;
+	    continue;
+	}
+
 	// Check if the object is resettable (int this reset)
 	if (reset_chance && reset_chance < random(101)) {
 	    continue; // Do nothing
@@ -432,37 +438,40 @@ reset_transient_objects()
 
 	int new_clone;
 
-	if (!ob) {
+	if (!ob || !ob->is_npc()) {
+	    new_clone = 1;
+
 	    if (stringp(object_info)) {
 		catch (ob = clone_object(object_info));
 	    } else if (pointerp(object_info)) {
 		catch (ob = clone_object(object_info[0]));
 	    }
-
-	    new_clone = 1;
 	}
 
 	if (!ob) {
 	    continue; // Cloning failed?
 	}
 
-	if (pointerp(object_info)) { // Process call_other's
-	    for (int i = 1, int s = sizeof(object_info); i < s; i++) {
-		if (!pointerp(object_info[i])) {
-		    continue;
-		}
+	if (new_clone) {
+	    if (pointerp(object_info)) { // Process call_other's
+		for (int i = 1, int s = sizeof(object_info); i < s; i++) {
+		    if (!pointerp(object_info[i])) {
+			continue;
+		    }
 
-		if (sizeof(object_info[i]) < 2) {
-		    call_other(ob, object_info[i][0]);
-		} else {
-		    apply(#'call_other, ob, object_info[i][0], object_info[i][1..<1]);
+		    if (sizeof(object_info[i]) < 2) {
+			call_other(ob, object_info[i][0]);
+		    } else {
+			apply(#'call_other, ob, object_info[i][0], object_info[i][1..<1]);
+		    }
 		}
 	    }
+
+	    transient_data[0] = ob;
 	}
 
-	transient_data[0] = ob;
-
-	if (!new_clone && ob && (ob->query_attack() || ob->query_master())) {
+	if (!new_clone && ob && ob->is_npc()
+	    && (ob->query_attack() || ob->query_master())) {
 	    continue;
 	}
 
