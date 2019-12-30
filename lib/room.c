@@ -303,8 +303,6 @@ remove_command(string arg)
 void
 add_permanent_object(string arg)
 {
-    object ob;
-
     if (!stringp(arg)) {
 	return;
     }
@@ -314,7 +312,7 @@ add_permanent_object(string arg)
 	permanent_names = ({});
     }
 
-    ob = clone_object(arg);
+    object ob = clone_object(arg);
     move_object(ob, this_object());
 
     permanent_objects += ({ ob });
@@ -353,8 +351,7 @@ add_transient_object(mixed arg, string appearmsg, int reset_chance)
 {
     object ob;
 
-    if (objectp(arg))
-    {
+    if (objectp(arg)) {
 	if (!transient_objects) {
 	    transient_objects = ({({ arg, 0, 0, 0 })});
 	} else {
