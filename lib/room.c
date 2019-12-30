@@ -423,7 +423,7 @@ reset_transient_objects()
 	    continue;
 	}
 
-	// Check if the object is resettable (int this reset)
+	// Check if the object is resettable (in this reset)
 	if (reset_chance && reset_chance < random(101)) {
 	    continue; // Do nothing
 	}
