@@ -1,8 +1,18 @@
-#include "room.h"
+inherit "/lib/room";
 
-THREE_EXIT("room/forest1", "east",
-	   "room/forest2", "west",
-	   "room/plane1", "north",
-	   "Clearing",
-	   "A small clearing. There are trees all around you.\n" +
-	   "However, the trees are sparse to the north.\n", 1)
+void create_room() {
+    set_lumens(1);
+
+    set_brief("Clearing");
+
+    set_description(
+	"A small clearing. There are trees all around you. "
+	"However, the trees are sparse to the north."
+      );
+
+    set_exits( ([
+	"east": "/room/forest1"
+	, "west": "/room/forest2"
+	, "north": "/room/plane1"
+      ]) );
+}

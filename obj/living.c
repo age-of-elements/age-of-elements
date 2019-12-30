@@ -178,8 +178,8 @@ void move_player(string dir_dest, object optional_dest_ob)
     if(is_light < 0)
 	is_light = 0;
     if (level >= 20) {
-	if (!optional_dest_ob)
-	    tell_object(this_object(), "/" + dest + "\n");
+	    tell_object(this_object(),
+		"/" + object_name(environment(this_object())) + "\n");
     }
     if(is_light) {
 	if (!msgin)

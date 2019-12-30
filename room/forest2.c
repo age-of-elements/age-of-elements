@@ -1,37 +1,31 @@
-#include "room.h"
+inherit "/lib/room";
 
-object troll;
+void create_room() {
+    set_lumens(1);
 
-#undef EXTRA_RESET
-#define EXTRA_RESET\
-    extra_reset();
+    set_brief("In a forest");
 
-void extra_reset() {
-    object money;
-    if (!troll || !living(troll)) {
-	troll = clone_object("obj/monster");
-	troll->set_name("troll");
-	troll->set_level(9);
-	troll->set_hp(100);
-	troll->set_wc(12);
-	troll->set_al(-60);
-	troll->set_short("A troll");
-	troll->set_long(
-		   "It is a nasty troll that look very aggressive.\n");
-	troll->set_aggressive(1);
-	troll->set_spell_mess1(
-		   "The troll says: Mumble");
-	troll->set_spell_mess2(
-		   "The troll says: Your mother was a bitch!");
-	troll->set_chance(20);
-	move_object(troll, this_object());
-	money = clone_object("obj/money");
-        money->set_money(random(500));
-        move_object(money, troll);
-    }
+    set_description(
+	"You are in a big forest."
+      );
+
+    set_exits( ([
+	"east": "/room/clearing"
+	, "west": "/room/slope"
+      ]) );
+
+    add_transient_object( ({ "/obj/monster"
+	, ({ "set_name", "troll" })
+	, ({ "set_level", 9 })
+	, ({ "set_hp", 100 })
+	, ({ "set_wc", 12 })
+	, ({ "set_al", -60 })
+	, ({ "set_short", "A troll" })
+	, ({ "set_long", "It is a nasty troll that looks very aggressive." })
+	, ({ "set_aggressive", 1 })
+	, ({ "set_spell_mess1", "The troll says: You'll get no treasure from me!" })
+	, ({ "set_spell_mess2", "The troll says: Your mother smelt of elderberries!" })
+	, ({ "set_chance", 20 })
+	, ({ "set_money", random(500) })
+      }) );
 }
-
-TWO_EXIT("room/clearing", "east",
-	 "room/slope", "west",
-        "In a forest",
-        "You are in a big forest.\n", 1)

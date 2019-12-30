@@ -153,7 +153,7 @@ int *exp_str;
 int get_next_exp(int str) {
     if(!exp_str){
 	exp_str = allocate(20);
-	
+
 	exp_str[19]	= 1000000;
 	exp_str[18]	=  666666;
 	exp_str[17]	=  444444;

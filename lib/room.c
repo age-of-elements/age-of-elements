@@ -351,14 +351,15 @@ add_transient_object(mixed arg, string appearmsg, int reset_chance)
 {
     object ob;
 
-    if (objectp(arg)) {
-	if (!transient_objects) {
-	    transient_objects = ({({ arg, 0, 0, 0 })});
-	} else {
-	    transient_objects += ({({ arg, 0, 0, 0 })});
-	}
-
+    if (!stringp(arg) && !pointerp(arg) && !objectp(arg)) {
 	return;
+    }
+
+    // Accept add_transient_object(object) and optionally write the appearmsg
+    // and calculation to determine if it is moved to the room, however the
+    // this room inheritable will *not* manage their resets.
+    if (objectp(arg)) {
+	ob = arg;
     }
 
     if (reset_chance && reset_chance < random(101)) {
@@ -387,17 +388,17 @@ add_transient_object(mixed arg, string appearmsg, int reset_chance)
 		}
 	    }
 	}
-    }
 
-    if (!transient_objects) {
-	transient_objects = ({});
+	if (!transient_objects) {
+	    transient_objects = ({});
+	}
+
+	transient_objects += ({({ ob, arg, appearmsg, reset_chance })});
     }
 
     if (ob) {
 	move_object(ob, this_object());
     }
-
-    transient_objects += ({({ ob, arg, appearmsg, reset_chance })});
 
     if (ob && appearmsg) { // Sometimes init() can destroy objects
 	say(sprintf("%s\n", appearmsg), ob);
@@ -417,8 +418,7 @@ reset_transient_objects()
 	string appearmsg = transient_data[2];
 	int reset_chance = transient_data[3];
 
-	// Where someone is using transient_objects outside create_room()
-	if (!ob || (!object_info || objectp(object_info))) {
+	if (!object_info || (!stringp(object_info) && !pointerp(object_info))) {
 	    transient_data = 0;
 	    continue;
 	}
@@ -515,8 +515,6 @@ id(string arg)
 void
 create()
 {
-    int s, i, k;
-
     if (function_exists("reset_room", this_object())) {
 	flags |= F_ROOM_RESET_USED;
     }
@@ -531,6 +529,9 @@ create()
 void
 reset()
 {
+    tell_object(find_living("tamarindo"),
+	"reset() in /" + object_name(this_object()) + "\n");
+
     if (flags & F_ROOM_RESET_USED) {
 	this_object()->reset_room();
     }
@@ -548,6 +549,8 @@ reset()
     // Reset transient objects
     if (pointerp(transient_objects)) {
 	reset_transient_objects();
+        tell_object(find_living("tamarindo"),
+		"reset_transient_objects() in /" + object_name(this_object()) + "\n");
     }
 }
 

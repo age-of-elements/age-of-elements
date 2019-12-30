@@ -308,6 +308,10 @@ void set_match(object ob, string * func, string * type, string * match) {
     say("talk match length " + sizeof(func) + "\n");
 }
 
+void set_money(int arg) {
+    money = arg;
+}
+
 void  set_dead_ob(object ob)
 {
     dead_ob = ob;

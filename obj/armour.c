@@ -78,7 +78,7 @@ string short() {
 }
 
 long(string str) {
-    write(long_desc);
+    write(long_desc + "\n");
 }
 
 int id(string str)

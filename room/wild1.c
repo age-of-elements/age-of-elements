@@ -1,10 +1,17 @@
-#include "room.h"
+inherit "/lib/room";
 
-#undef EXTRA_RESET
-#define EXTRA_RESET no_castle_flag = 1;
+void create_room() {
+    set_lumens(1);
 
-TWO_EXIT("room/hump", "east",
-	 "room/forest1", "west",
-	 "Wilderness",
-	 "You are in the wilderness outside the village.\n" +
-	 "There is a big forest to the west.\n", 1)
+    set_brief("Wilderness");
+
+    set_description(
+	"You are in the wilderness outside the village. There is a big forest "
+	"to the west."
+      );
+
+    set_exits( ([
+	"east": "/room/hump"
+	, "west": "/room/forest1"
+      ]) );
+}
