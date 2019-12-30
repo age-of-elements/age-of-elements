@@ -8,9 +8,12 @@ private nosave mixed description;
 private nosave mapping exits;
 private nosave mapping items;
 private nosave mapping commands;
+private nosave object *permanent_objects;
+private nosave string *permanent_names;
+private nosave mixed *transient_objects;
 
 int
-get_lumens()
+query_lumens()
 {
     return lumens;
 }
@@ -22,7 +25,7 @@ set_lumens(int arg)
 }
 
 string
-get_brief()
+query_brief()
 {
     if (closurep(brief)) {
 	return funcall(brief);
@@ -42,7 +45,7 @@ set_brief(mixed arg)
 }
 
 string
-get_description()
+query_description()
 {
     if (closurep(description)) {
 	return funcall(description);
@@ -62,7 +65,7 @@ set_description(mixed arg)
 }
 
 mapping
-get_exits()
+query_exits()
 {
     return exits;
 }
@@ -84,7 +87,7 @@ set_exits(mapping arg)
 }
 
 mixed
-get_exit(string arg)
+query_exit(string arg)
 {
     if (!arg || !exits || !sizeof(exits)) {
 	return 0;
@@ -120,7 +123,7 @@ remove_exit(string arg)
 }
 
 mapping
-get_items()
+query_items()
 {
     mapping ret = deep_copy(items);
 
@@ -173,7 +176,7 @@ set_items(mapping arg)
 }
 
 mixed
-get_item(string arg)
+query_item(string arg)
 {
     string synonym;
 
@@ -262,7 +265,7 @@ set_commands(mapping arg)
 }
 
 mixed
-get_command(string arg)
+query_command(string arg)
 {
     if (!arg || !commands || !sizeof(commands)) {
 	return 0;
@@ -295,6 +298,181 @@ remove_command(string arg)
     if (!sizeof(commands)) {
 	commands = 0;
     }
+}
+
+void
+add_permanent_object(string arg)
+{
+    object ob;
+
+    if (!stringp(arg)) {
+	return;
+    }
+
+    if (!pointerp(permanent_names)) {
+	permanent_objects = ({});
+	permanent_names = ({});
+    }
+
+    ob = clone_object(arg);
+    move_object(ob, this_object());
+
+    permanent_objects += ({ ob });
+    permanent_names += ({ arg });
+}
+
+void
+reset_permanent_objects()
+{
+    int s, i, k;
+
+    if (pointerp(permanent_names) && (s = sizeof(permanent_names))) {
+	i = 0;
+
+	while (i < s) {
+	    if (!permanent_objects[i]) {
+		permanent_objects[i] = clone_object(permanent_names[i]);
+		k++;
+	    }
+
+	    i++;
+	}
+
+	if (k || first_inventory() != permanent_objects[0]) {
+	    i = s;
+
+	    while ((--i) >= 0) {
+		move_object(permanent_objects[i], this_object());
+	    }
+	}
+    }
+}
+
+varargs void
+add_transient_object(mixed arg, string appearmsg, int reset_chance)
+{
+    object ob;
+
+    if (objectp(arg))
+    {
+	if (!transient_objects) {
+	    transient_objects = ({({ arg, 0, 0, 0 })});
+	} else {
+	    transient_objects += ({({ arg, 0, 0, 0 })});
+	}
+
+	return;
+    }
+
+    if (reset_chance && reset_chance < random(101)) {
+	; // Do nothing
+    } else {
+	if (stringp(arg)) { // A simple file name
+	    catch (ob = clone_object(arg));
+	} else if (pointerp(arg)) { // A more complex array
+	    catch (ob = clone_object(arg[0])); // First element must be the file name
+	}
+
+	if (!ob) {
+	    return; // Cloning failed?
+	}
+
+	if (pointerp(arg)) { // Process call_other's
+	    for (int i = 1, int s = sizeof(arg); i < s; i++) {
+		if (!pointerp(arg[i])) {
+		    continue;
+		}
+
+		if (sizeof(arg[i]) < 2) {
+		    call_other(ob, arg[i][0]);
+		} else {
+		    apply(#'call_other, ob, arg[i][0], arg[i][1..<1]);
+		}
+	    }
+	}
+    }
+
+    if (!transient_objects) {
+	transient_objects = ({});
+    }
+
+    if (ob) {
+	move_object(ob, this_object());
+    }
+
+    transient_objects += ({({ ob, arg, appearmsg, reset_chance })});
+
+    if (ob && appearmsg) { // Sometimes init() can destroy objects
+	say(sprintf("%s\n", appearmsg), ob);
+    }
+}
+
+void
+reset_transient_objects()
+{
+    foreach (mixed transient_data : transient_objects) {
+	if (!pointerp(transient_data)) {
+	    continue;
+	}
+
+	object ob = transient_data[0];
+	mixed object_info = transient_data[1];
+	string appearmsg = transient_data[2];
+	int reset_chance = transient_data[3];
+
+	// Check if the object is resettable (int this reset)
+	if (reset_chance && reset_chance < random(101)) {
+	    continue; // Do nothing
+	}
+
+	// If the object is here, do nothing
+	if (ob && environment(ob) == this_object()) {
+	    continue;
+	}
+
+	int new_clone;
+
+	if (!ob) {
+	    if (stringp(object_info)) {
+		catch (ob = clone_object(object_info));
+	    } else if (pointerp(object_info)) {
+		catch (ob = clone_object(object_info[0]));
+	    }
+
+	    new_clone = 1;
+	}
+
+	if (!ob) {
+	    continue; // Cloning failed?
+	}
+
+	if (pointerp(object_info)) { // Process call_other's
+	    for (int i = 1, int s = sizeof(object_info); i < s; i++) {
+		if (!pointerp(object_info[i])) {
+		    continue;
+		}
+
+		if (sizeof(object_info[i]) < 2) {
+		    call_other(ob, object_info[i][0]);
+		} else {
+		    apply(#'call_other, ob, object_info[i][0], object_info[i][1..<1]);
+		}
+	    }
+	}
+
+	transient_data[0] = ob;
+
+	if (!new_clone && ob && (ob->query_attack() || ob->query_master())) {
+	    continue;
+	}
+
+	// Return to this room.
+	move_object(ob, this_object());
+
+	say(sprintf("%s\n", appearmsg), ob);
+    }
+
+    transient_objects -= ({ 0 });
 }
 
 varargs int
@@ -330,15 +508,17 @@ id(string arg)
 void
 create()
 {
+    int s, i, k;
+
     if (function_exists("reset_room", this_object())) {
 	flags |= F_ROOM_RESET_USED;
     }
 
+    this_object()->create_room();
+
     if (function_exists("init_room", this_object())) {
 	flags |= F_ROOM_INIT_USED;
     }
-
-    this_object()->create_room();
 }
 
 void
@@ -351,6 +531,16 @@ reset()
     // reset_room() may call destruct()
     if (!this_object()) {
        return;
+    }
+
+    // Clone and replace missing permanent objects
+    if (pointerp(permanent_names)) {
+	reset_permanent_objects();
+    }
+
+    // Reset transient objects
+    if (pointerp(transient_objects)) {
+	reset_transient_objects();
     }
 }
 
@@ -377,7 +567,7 @@ int
 search_cmd(string arg)
 {
     tell_object(this_player()
-	, "You search around, but did not find any interesting discoveries.");
+	, "You search around, but did not find any interesting discoveries.\n");
 
     return 1;
 }
@@ -386,7 +576,7 @@ int
 listen_cmd(string arg)
 {
     tell_object(this_player()
-	, "You listen intently, but did not hear any interesting sounds.");
+	, "You listen intently, but did not hear any interesting sounds.\n");
 
     return 1;
 }
@@ -395,7 +585,7 @@ int
 smell_cmd(string arg)
 {
     tell_object(this_player()
-	, "You sniff vigorously, but did not detect any interesting scents.");
+	, "You sniff vigorously, but did not detect any interesting scents.\n");
 
     return 1;
 }

@@ -1136,7 +1136,7 @@ int look(string str) {
         return 1;
     if (!str) {
 #if 1
-	mixed desc = environment()->get_description();
+	mixed desc = environment()->query_description();
 
 	if (stringp(desc)) {
 	    write(sprintf("%s\n", desc));

@@ -1,24 +1,34 @@
-#include "room.h"
+inherit "/lib/room";
 
-#undef EXTRA_RESET
-#define EXTRA_RESET\
-        no_castle_flag = 1;\
-        if (!present("stick")) {\
-            object stick;\
-	    stick = clone_object("obj/torch");\
-	    move_object(stick, "room/hump");\
-	    stick->set_name("stick");\
-	    stick->set_fuel(500);\
-	    stick->set_weight(1);\
-        }\
-        if (!present("money")) {\
-	    object money;\
-            money = clone_object("obj/money");\
-	    move_object(money, "room/hump");\
-	    money->set_money(10);\
-        }
+void reset_room();
 
-TWO_EXIT("room/vill_green", "east",
-	 "room/wild1", "west",
-	 "Humpbacked bridge",
-	 "An old humpbacked bridge.\n", 1)
+void create_room() {
+    set_lumens(1);
+
+    set_brief("Humpbacked bridge");
+
+    set_description(
+	"An old humpbacked bridge."
+      );
+
+    set_exits( ([
+	"east": "/room/vill_green",
+	"west": "/room/wild1",
+      ]) );
+
+    add_transient_object(
+	({ "/obj/torch"
+	    , ({ "set_name", "stick" })
+	    , ({ "set_fuel", 500 })
+	    , ({ "set_weight", 1 })
+	})
+      );
+
+    add_transient_object(
+	({ "/obj/money"
+	    , ({ "set_money", 10 })
+	})
+	, "Some coins are tossed up onto the bridge."
+	, 100
+      );
+}

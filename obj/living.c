@@ -206,7 +206,7 @@ void move_player(string dir_dest, object optional_dest_ob)
     ob = environment(this_object());
 
     // This section is in transition and will be refactored.
-    mixed _brief = ob->get_brief();
+    mixed _brief = ob->query_brief();
 
     if (stringp(_brief)) {
 	if (!is_npc) {
@@ -241,7 +241,7 @@ void move_player(string dir_dest, object optional_dest_ob)
     }
 
     if (!brief) {
-        mixed desc = ob->get_description();
+        mixed desc = ob->query_description();
 
 	if (stringp(desc)) {
 	    if (!is_npc) {
@@ -274,7 +274,7 @@ void move_player(string dir_dest, object optional_dest_ob)
 	}
     }
 
-    mapping _exits = ob->get_exits();
+    mapping _exits = ob->query_exits();
 
     if (mappingp(_exits)) {
 	int number_of_exits = sizeof(m_indices(_exits));

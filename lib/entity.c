@@ -9,7 +9,7 @@ private mixed brief;
 private mixed description;
 
 int
-get_lumens()
+query_lumens()
 {
     return lumens;
 }
@@ -21,7 +21,7 @@ set_lumens(int arg)
 }
 
 string
-get_name()
+query_name()
 {
     return name;
 }
@@ -33,7 +33,7 @@ set_name(string arg)
 }
 
 string *
-get_aliases()
+query_aliases()
 {
     return pointerp(aliases) ? copy(aliases) : 0;
 }
@@ -87,7 +87,7 @@ has_alias(string arg)
 }
 
 string
-get_brief()
+query_brief()
 {
     if (closurep(brief)) {
         return funcall(brief);
@@ -107,7 +107,7 @@ set_brief(mixed arg)
 }
 
 string
-get_description()
+query_description()
 {
     if (closurep(description)) {
         return funcall(description);
