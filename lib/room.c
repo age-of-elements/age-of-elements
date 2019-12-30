@@ -475,7 +475,9 @@ reset_transient_objects()
 	// Return to this room.
 	move_object(ob, this_object());
 
-	say(sprintf("%s\n", appearmsg), ob);
+	if (ob && appearmsg) { // Sometimes init() can destroy objects
+	    say(sprintf("%s\n", appearmsg), ob);
+	}
     }
 
     transient_objects -= ({ 0 });
@@ -484,8 +486,7 @@ reset_transient_objects()
 varargs int
 move(string dir, string room)
 {
-    if (!this_player())
-    {
+    if (!this_player()) {
 	return 0;
     }
 
