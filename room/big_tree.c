@@ -1,37 +1,52 @@
-#include "std.h"
+inherit "/lib/room";
 
-#undef EXTRA_INIT
-#define EXTRA_INIT\
-    add_action("climb", "climb");
+void create_room() {
+    set_lumens(1);
 
-#undef EXTRA_RESET
-#define EXTRA_RESET\
-    if (!present("rope"))\
-	move_object(clone_object("obj/rope"), this_object());
+    set_brief("Big tree");
 
-TWO_EXIT("room/plane7", "east",
-	 "room/giant_path", "west",
-	 "Big tree",
-	 "A big single tree on the plain.\n", 1)
+    set_description(
+	"A big single tree on the plain."
+      );
 
-int id(string str) {
-    if (str == "tree" || str == "big tree")
+    set_exits( ([
+	"east": "/room/plane7"
+	, "west": "/room/giant_path"
+      ]) );
+
+    set_commands( ([
+	"climb": "climb"
+	, "tie": "tie"
+      ]) );
+
+    add_transient_object("/obj/rope");
+}
+
+int id(string str)
+{
+    if (str == "tree" || str == "big tree") {
 	return 1;
+    }
+
     return 0;
 }
 
-int tie(string str) {
+int tie(string str)
+{
     if (str == "tree" || str == "big tree") {
 	write("The branches are very high up.\n");
 	return 0;
     }
+
     return 0;
 }
 
 int climb(string str)
 {
-    if (!id(str))
+    if (!id(str)) {
 	return 0;
+    }
+
     write("There are no low branches.\n");
     return 1;
 }

@@ -1,21 +1,25 @@
-#include "room.h"
+inherit "/lib/room";
 
-object giant;
+void create_room() {
+    set_lumens(1);
 
-#undef EXTRA_RESET
-#define EXTRA_RESET\
-    if (!giant || !living(giant)) {\
-	giant = clone_object("obj/monster");\
-	giant->set_name("giant");\
-	giant->set_level(15);\
-	giant->set_short("A giant");\
-	giant->set_wc(20);\
-	giant->set_ac(2);\
-	giant->set_aggressive(1);\
-	move_object(giant, this_object());\
-    }
+    set_brief("Lair of the Giant");
 
-TWO_EXIT("room/giant_path", "east",
-	 "room/giant_conf", "west",
-	 "Lair of the Giant",
-	 "There are mountains all around you.\n", 1)
+    set_description(
+	"There are mountains all around you."
+      );
+
+    set_exits( ([
+	"east": "/room/giant_path"
+	, "west": "/room/giant_conf"
+      ]) );
+
+    add_transient_object( ({ "/obj/monster"
+	, ({ "set_name", "giant" })
+	, ({ "set_level", 15 })
+	, ({ "set_short", "A giant" })
+	, ({ "set_wc", 20 })
+	, ({ "set_ac", 2 })
+	, ({ "set_aggressive", 1 })
+      }) );
+}

@@ -1,8 +1,17 @@
-#include "room.h"
+inherit "/lib/room";
 
-TWO_EXIT("room/big_tree", "east",
-	 "room/giant_lair", "west",
-	 "A path",
-	 "You are on a path going in east/west direction. There are some\n" +
-	 "VERY big footsteps here.\n", 1)
+void create_room() {
+    set_lumens(1);
 
+    set_brief("A path");
+
+    set_description(
+	 "You are on a path going in east/west direction. There are some "
+	 "VERY big footsteps here."
+      );
+
+    set_exits( ([
+	"east": "/room/big_tree"
+	, "west": "/room/giant_lair"
+      ]) );
+}

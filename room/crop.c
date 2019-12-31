@@ -1,6 +1,14 @@
-#include "room.h"
-ONE_EXIT("room/vill_shore","north",
-"Fields",
-"You are in the middle of the fields where the city grows all its crops.\n"+
-"A road runs north of here.\n",
-1)
+inherit "/lib/room";
+
+void create_room() {
+    set_lumens(1);
+
+    set_brief("Fields");
+
+    set_description(
+	"You are in the middle of the fields where the city grows all its "
+	"crops. A road runs north of here."
+      );
+
+    add_exit("north", "/room/vill_shore");
+}

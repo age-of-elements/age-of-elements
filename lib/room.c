@@ -529,9 +529,6 @@ create()
 void
 reset()
 {
-    tell_object(find_living("tamarindo"),
-	"reset() in /" + object_name(this_object()) + "\n");
-
     if (flags & F_ROOM_RESET_USED) {
 	this_object()->reset_room();
     }
@@ -549,8 +546,6 @@ reset()
     // Reset transient objects
     if (pointerp(transient_objects)) {
 	reset_transient_objects();
-        tell_object(find_living("tamarindo"),
-		"reset_transient_objects() in /" + object_name(this_object()) + "\n");
     }
 }
 

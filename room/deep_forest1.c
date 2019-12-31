@@ -1,5 +1,13 @@
-#include "room.h"
+inherit "/lib/room";
 
-ONE_EXIT("room/plane12", "east",
-	 "Deep forest",
-	 "In the deep forest. The wood lights up to the east.\n", 1)
+void create_room() {
+    set_lumens(1);
+
+    set_brief("Deep forest");
+
+    set_description(
+	"In the deep forest. The wood lights up to the east."
+      );
+
+    add_exit("east", "/room/plane12");
+}

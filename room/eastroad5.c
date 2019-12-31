@@ -1,7 +1,16 @@
-#include "room.h"
-TWO_EXIT("room/eastroad4","south",
-"room/inn","west",
-"East road",
-"East road runs south from here.\n"+
-"To the west lies the Eastroad Inn.\n",
-1)
+inherit "/lib/room";
+
+void create_room() {
+    set_lumens(1);
+
+    set_brief("East road");
+
+    set_description(
+	"East road runs south from here. To the west lies the Eastroad Inn."
+      );
+
+    set_exits( ([
+	"south": "/room/eastroad4"
+	, "west": "/room/inn"
+      ]) );
+}

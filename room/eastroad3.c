@@ -1,9 +1,17 @@
-#include "room.h"
-THREE_EXIT("room/eastroad4","north",
-         "room/eastroad2","south",
-         "room/sunalley1","west",
-"East road",
-"East road runs north-south.\n"+
-"Sun alley is to the west.\n",
-1)
+inherit "/lib/room";
 
+void create_room() {
+    set_lumens(1);
+
+    set_brief("East road");
+
+    set_description(
+	"East road runs north-south. Sun alley is to the west."
+      );
+
+    set_exits( ([
+	"north": "room/eastroad4"
+        , "south": "room/eastroad2"
+        , "west": "room/sunalley1"
+      ]) );
+}

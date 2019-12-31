@@ -10,7 +10,7 @@ void create_room() {
       );
 
     set_exits( ([
-	"north": "/room/forest8",
+	"north": "/room/forest8"
 	, "east": "/room/forest10"
 	, "west": "/room/forest11"
       ]) );
