@@ -83,12 +83,12 @@ void long(string str)
 	      "it is only left for tourists to look at.\n");
 	return;
     }
-    write("You are in the local village church.\nThere is a huge pit in the center,\n" +
+    write(process_mxp("You are in the local village church.\nThere is a huge pit in the center,\n" +
 	"and a door in the west wall. There is a %^BOLD%^%^WHITE%^" +
-	MXPTAG("send 'push &text;' HINT='push button'") + "button" + MXPTAG("/send") + "%^RESET%^ beside the door.\n");
+	MXPTAG("send 'push &text;' HINT='push button'") + "button" + MXPTAG("/send") + "%^RESET%^ beside the door.\n", this_player()->does_mxp()));
     write("This church has the service of reviving ghosts. Dead people come\n");
-    write("to the church and %^BOLD%^%^WHITE%^" +
-	MXPTAG("send &text;") + "pray" + MXPTAG("/send") + "%^RESET%^.\n");
+    write(process_mxp("to the church and %^BOLD%^%^WHITE%^" +
+	MXPTAG("send &text;") + "pray" + MXPTAG("/send") + "%^RESET%^.\n", this_player()->does_mxp()));
     write("There is a clock on the wall.\n");
     write("There is an exit to south.\n");
     if (lamp_is_lit)

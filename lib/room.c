@@ -196,7 +196,7 @@ query_item(string arg)
 void
 add_item(mixed item, mixed desc)
 {
-    if (!stringp(desc) || !closurep(desc)) {
+    if (!stringp(desc) && !closurep(desc)) {
 	return;
     }
 

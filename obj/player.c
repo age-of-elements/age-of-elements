@@ -1139,9 +1139,9 @@ int look(string str) {
 	mixed desc = environment()->query_description();
 
 	if (stringp(desc)) {
-	    write(sprintf("%s\n", desc));
+	    write(process_mxp(sprintf("%s\n", desc), does_mxp()));
 	} else if (closurep(desc)) {
-	    write(sprintf("%s\n", funcall(desc)));
+	    write(process_mxp(sprintf("%s\n", funcall(desc)), does_mxp()));
 	}
 #endif
         environment()->long();
@@ -1174,7 +1174,15 @@ int look(string str) {
             return 1;
         }
         it = item;
-        ob->long(item);
+	if (ob->query_item(item)) {
+	    if (stringp(ob->query_item(item))) {
+		write(process_mxp(sprintf("%s\n", ob->query_item(item)), does_mxp()));
+	    } else if (closurep(ob->query_item(item))) {
+		write(process_mxp(sprintf("%s\n", funcall(ob->query_item(item))), does_mxp()));
+	    }
+	} else {
+	    ob->long(item);
+	}
         weight = ob->query_weight();
         if (!living(ob)) {
             if (weight >= 5)

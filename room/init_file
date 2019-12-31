@@ -1,6 +1,8 @@
 #
 # List of objects to load automatically at reboot.
 #
+lib/entity.c
+lib/room.c
 obj/quicktyper.c
 room/adv_guild
 obj/living

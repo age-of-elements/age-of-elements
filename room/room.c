@@ -55,14 +55,14 @@ void long(string str) {
     int i;
 
     if (set_light(0) == 0){
-	write(sprintf("%sIt is dark.%s\n", MXPTAG("RDesc"), MXPTAG("/RDesc")));
+	write(process_mxp(sprintf("%sIt is dark.%s\n", MXPTAG("RDesc"), MXPTAG("/RDesc")), this_player()->does_mxp()));
 	return;
     }
 
     if (!str) {
-	write(sprintf("%s%s%s\n", MXPTAG("RDesc"), long_desc, MXPTAG("/RDesc")));
+	write(process_mxp(sprintf("%s%s%s\n", MXPTAG("RDesc"), long_desc, MXPTAG("/RDesc")), this_player()->does_mxp()));
 
-	write(MXPTAG("RExits"));
+	write(process_mxp(MXPTAG("RExits"), this_player()->does_mxp()));
 	if (!dest_dir)
 	    write("    No obvious exits.");
 	else {
@@ -73,7 +73,7 @@ void long(string str) {
 		write("    There are " + convert_number(sizeof(dest_dir)/2) +
 		      " obvious exits:");
 	    while(i < sizeof(dest_dir)) {
-		write(" " + MXPTAG("Ex") + dest_dir[i] + MXPTAG("/Ex"));
+		write(process_mxp(" " + MXPTAG("Ex") + dest_dir[i] + MXPTAG("/Ex"), this_player()->does_mxp()));
 		i += 2;
 		if (i == sizeof(dest_dir) - 1)
 		    write(" and");
@@ -82,7 +82,7 @@ void long(string str) {
 	    }
 	}
 
-	write(MXPTAG("/RExits"));
+	write(process_mxp(MXPTAG("/RExits"), this_player()->does_mxp()));
 	write("\n");
 	return;
     }

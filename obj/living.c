@@ -210,31 +210,31 @@ void move_player(string dir_dest, object optional_dest_ob)
 
     if (stringp(_brief)) {
 	if (!is_npc) {
-	    this_object()->catch_tell(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+	    this_object()->catch_tell(process_mxp(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
 		, MXPTAG("RName")
 		, _brief
 		, MXPTAG("/RName")
-	      ));
+	      ), does_mxp()));
 	} else {
 	    write(sprintf("%s.\n", _brief));
 	}
     } else if (closurep(_brief)) {
 	if (!is_npc) {
-	    this_object()->catch_tell(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+	    this_object()->catch_tell(process_mxp(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
 		, MXPTAG("RName")
 		, funcall(_brief)
 		, MXPTAG("/RName")
-	      ));
+	      ), does_mxp()));
 	} else {
 	    write(sprintf("%s\n", funcall(_brief)));
 	}
     } else {
 	if (!is_npc) {
-	    this_object()->catch_tell(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+	    this_object()->catch_tell(process_mxp(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
 		, MXPTAG("RName")
 		, ob->short()
 		, MXPTAG("/RName")
-	      ));
+	      ), does_mxp()));
 	} else {
 	    write(sprintf("%s\n", ob->short()));
 	}
@@ -245,29 +245,29 @@ void move_player(string dir_dest, object optional_dest_ob)
 
 	if (stringp(desc)) {
 	    if (!is_npc) {
-		this_object()->catch_tell(sprintf("%s%s%s\n"
+		this_object()->catch_tell(process_mxp(sprintf("%s%s%s\n"
 		    , MXPTAG("RDesc")
 		    , desc
 		    , MXPTAG("/RDesc")
-		  ));
+		  ), does_mxp()));
 	    } else {
 		write(sprintf("%s.\n", desc));
 	    }
 	} else if (closurep(desc)) {
 	    if (!is_npc) {
-		this_object()->catch_tell(sprintf("%s%s%s\n"
+		this_object()->catch_tell(process_mxp(sprintf("%s%s%s\n"
 		    , MXPTAG("RDesc")
 		    , funcall(desc)
 		    , MXPTAG("/RDesc")
-		  ));
+		  ), does_mxp()));
 	    } else {
 		write(sprintf("%s\n", funcall(desc)));
 	    }
 	} else {
 	    if (!is_npc) {
-		this_object()->catch_tell(MXPTAG("RDesc"));
+		this_object()->catch_tell(process_mxp(MXPTAG("RDesc"), does_mxp()));
 		ob->long();
-		this_object()->catch_tell(MXPTAG("/RDesc"));
+		this_object()->catch_tell(process_mxp(MXPTAG("/RDesc"), does_mxp()));
 	    } else {
 		ob->long();
 	    }
