@@ -1,16 +1,20 @@
-#include "std.h"
+inherit "/lib/room";
 
-#undef EXTRA_INIT
-#define EXTRA_INIT add_action("up", "up");\
-  		   add_action("up", "climb");
+void create_room() {
+    set_lumens(1);
 
-TWO_EXIT("room/plane11", "south",
-	 "room/mine/tunnel", "north",
-	 "Mountain pass",
-	 "You are in a pass going into the mountain with a steep slope\nupwards to the north.\nHowever, the path is barred.\nThere is a tunnel entrance to the north.\n"+
-	 "It might be possible to climb up, though\n", 1)
+    set_brief("Mountain pass");
 
-int up() {
-    this_player()->move_player("up#room/ravine");
-    return 1;
+    set_description(
+	"You are in a pass going into the mountain with a steep slope "
+	"upwards to the north. However, the path is barred. There is a "
+	"tunnel entrance to the north. It might be possible to climb "
+	"up."
+      );
+
+    set_exits( ([
+	"south": "/room/plane11"
+	, "north": "/room/mine/tunnel"
+	, "up": "/room/ravine"
+      ]) );
 }

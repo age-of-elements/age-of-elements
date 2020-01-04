@@ -1,7 +1,17 @@
-#include "room.h"
+inherit "/lib/room";
 
-THREE_EXIT("room/plane13", "north",
-	   "room/plane6", "west",
-	   "room/ruin", "south",
-	   "A large open plain",
-	   "A large open plain.\n", 1)
+void create_room() {
+    set_lumens(1);
+
+    set_brief("A large open plain");
+
+    set_description(
+	"A large open plain."
+      );
+
+    set_exits( ([
+	"north": "/room/plane13"
+	, "west": "/room/plane6"
+	, "south": "/room/ruin"
+      ]) );
+}

@@ -1,20 +1,15 @@
-string short() {
-    return "The local prison";
-}
+inherit "/lib/room";
 
-void long() {
-    write("You are in the local prison.\n");
-    write("There are no exits.\n");
-}
+void create_room() {
+    set_lumens(1);
 
-void reset(int arg) {
-    if (arg)
-	return;
-    set_light(1);
-}
+    set_brief("The local prison");
 
-void init() {
-    add_action("quit", "quit");
+    set_description(
+	"You are in the local prison. There is no way out, alive."
+      );
+
+    add_command("quit", "quit");
 }
 
 int quit() { return 1; }

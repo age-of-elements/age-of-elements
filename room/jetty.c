@@ -1,10 +1,18 @@
-#include "room.h"
+inherit "/lib/room";
 
-#undef EXTRA_RESET
-#define EXTRA_RESET no_castle_flag=1;
-TWO_EXIT("room/vill_shore","west",
-         "room/vill_shore2","east",
-         "Road",
-"You are on a road going out of the village. To the east the road widens out\n"+
-"as it leads down to the shore. To the west lies the city.\n",
-1)
+void create_room() {
+    set_lumens(1);
+
+    set_brief("Road");
+
+    set_description(
+	"You are on a road going out of the village. To the east the road "
+	"widens out as it leads down to the shore. To the west lies the "
+	"city."
+      );
+
+    set_exits( ([
+	"west": "room/vill_shore"
+	, "east": "room/vill_shore2"
+      ]) );
+}

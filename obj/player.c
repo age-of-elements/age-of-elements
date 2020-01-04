@@ -1854,8 +1854,12 @@ int toggle_brief()
 
 void add_exp(int e) {
 #ifdef LOG_EXP
-    if (this_player() && this_player() != this_object() &&
-      query_ip_number(this_player()) && level < 20 && e >= ROOM_EXP_LIMIT)
+    if (this_player()
+	&& this_player() != this_object()
+	&& interactive(this_player())
+	&& query_ip_number(this_player())
+	&& level < 20
+	&& e >= ROOM_EXP_LIMIT)
         log_file("EXPERIENCE", ctime(time()) + " " + name + "(" + level +
                 ") " + e + " exp by " + this_player()->query_real_name() +
                 "(" + this_player()->query_level() + ")" +"\n");

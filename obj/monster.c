@@ -96,7 +96,7 @@ string short() {
 }
 
 int long(string str) {
-    write (long_desc);
+    write (process_mxp(long_desc, this_player()->does_mxp()));
     return 1;
 }
 
@@ -305,7 +305,6 @@ void set_match(object ob, string * func, string * type, string * match) {
     talk_func = func;
     talk_type = type;
     talk_match = match;
-    say("talk match length " + sizeof(func) + "\n");
 }
 
 void set_money(int arg) {

@@ -1,14 +1,19 @@
-#include "room.h"
+inherit "/lib/room";
 
-/* no castle drop here... its a jetty, how can anything be placed north &
-   south of here... there is nothing but water around, place it in sea */
-#undef EXTRA_RESET
-#define EXTRA_RESET\
-    no_castle_flag=1;\
-    if (!present("bag"))\
-        move_object(clone_object("obj/bag"), this_object());
+void create_room() {
+    set_lumens(1);
 
-TWO_EXIT("room/vill_shore2", "west",
-	 "room/sea", "east",
-	 "Jetty",
-"You are at a jetty. The waves rolls in from east.\nA small path leads back to west.\n", 1)
+    set_brief("Jetty");
+
+    set_description(
+	"You are at a jetty. The waves rolls in from east. A small path leads back "
+	"to the west."
+      );
+
+    set_exits( ([
+	"west": "/room/vill_shore2"
+	, "east": "/room/sea"
+      ]) );
+
+    add_transient_object("/obj/bag");
+}
