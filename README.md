@@ -134,7 +134,10 @@ FLUSH PRIVILEGES;
 exit
 cp wordpress/wp-config-sample.php wordpress/wp-config.php
 nano wordpress/wp-config.php
-https://api.wordpress.org/secret-key/1.1/salt/
+```
+* Generate necessary random values here: [WordPress API](https://api.wordpress.org/secret-key/1.1/salt/)
+* Add `define('FS_METHOD','direct');` to the file to enable WordPress updates via direct downloads vs. setting up an FTP account.
+```
 cp -r wordpress/* /var/www/html/
 ```
 Update your HTTP configuration with `sudo nano /etc/httpd/conf/httpd.conf`, containing the following content:
