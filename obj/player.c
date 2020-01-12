@@ -8,6 +8,7 @@
 #define WIZ 1
 #define ARCH 0
 
+nosave int last_hp, last_sp;
 static object myself;                /* Ourselfs. */
 string title;                /* Our official title. Wiz's can change it. */
 string password;        /* This players crypted password. */
@@ -50,7 +51,7 @@ void load_auto_obj(string str);
 void compute_auto_str();
 int vis();
 string check_access_list(string top, string dir, string file);
-string print_prompt(string arg);
+varargs string print_prompt(string arg);
 
 /* Some functions to set moving messages. */
 
@@ -108,6 +109,7 @@ static int logon() {
     cat("/WELCOME");
     write("Version: " + version() + "\n");
     input_to("logon2", INPUT_PROMPT, "What is your name: ");
+    binary_message(({IAC, GA}), 2);
     call_out("time_out", 120);
 
     return 1;
@@ -203,6 +205,7 @@ static void logon2(string str) {
     str = lower_case(str);
     if (!valid_name(str)) {
         input_to("logon2", INPUT_PROMPT, "Give name again: ");
+	binary_message(({IAC, GA}), 2);
         return;
     }
     if (restore_object("banish/" + str)) {
@@ -237,8 +240,11 @@ static void logon2(string str) {
     else
         input_to("new_password", 1);
     write("Password: ");
+
     if (name == "guest")
-        write("(just CR) ");
+        write("(just hit ENTER) ");
+
+    binary_message(({IAC, GA}), 2);
     attacker_ob = 0;
     alt_attacker_ob = 0;
     return;
@@ -781,6 +787,13 @@ static void heart_beat() {
             }
             time_to_heal = INTERVAL_BETWEEN_HEALING;
         }
+    }
+
+    if (hit_point != last_hp || spell_points != last_sp) {
+	print_prompt();
+
+	last_hp = to_int(hit_point);
+	last_sp = to_int(spell_points);
     }
 
     if (stuffed)
@@ -1440,6 +1453,8 @@ static void move_player_to_start3(mixed where) {
         set_str(tmp); set_int(tmp); set_con(tmp); set_dex(tmp);
         stats_is_updated = 1;
     }
+    last_hp = hit_point;
+    last_sp = spell_points;
     /*
      * Now we can enter the game. Check tot_value if the game
      * crashed, and the values of the player was saved.
@@ -2845,11 +2860,18 @@ string check_access_list(string top, string dir, string file) {
     return 0;
 }
 
-string print_prompt(string arg) {
-    string prompt = "> ";
+varargs string print_prompt(string arg) {
+    string prompt;
 
-    if (arg) {
+    if (arg && arg != "> ") {
 	prompt = arg;
+    } else {
+	prompt = sprintf("%^BOLD%^%^CYAN%^Health:%^RESET%^ %d%^BOLD%^%^CYAN%^/%d%^RESET%^ %^BOLD%^%^CYAN%^Mana:%^RESET%^ %d%^BOLD%^%^CYAN%^/%d%^RESET%^ > "
+	    , hit_point
+	    , max_hp
+	    , spell_points
+	    , max_sp
+	);
     }
 
     catch_tell(process_mxp(sprintf("%s%s%s", MXPTAG("Prompt"), prompt, MXPTAG("/Prompt")), does_mxp()));

@@ -210,7 +210,7 @@ void move_player(string dir_dest, object optional_dest_ob)
 
     if (stringp(_brief)) {
 	if (!is_npc) {
-	    this_object()->catch_tell(process_mxp(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+	    this_object()->catch_tell(process_mxp(sprintf("%s%^ORANGE%^%s%^RESET%^%s\n"
 		, MXPTAG("RName")
 		, _brief
 		, MXPTAG("/RName")
@@ -220,7 +220,7 @@ void move_player(string dir_dest, object optional_dest_ob)
 	}
     } else if (closurep(_brief)) {
 	if (!is_npc) {
-	    this_object()->catch_tell(process_mxp(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+	    this_object()->catch_tell(process_mxp(sprintf("%s%^ORANGE%^%s%^RESET%^%s\n"
 		, MXPTAG("RName")
 		, funcall(_brief)
 		, MXPTAG("/RName")
@@ -230,7 +230,7 @@ void move_player(string dir_dest, object optional_dest_ob)
 	}
     } else {
 	if (!is_npc) {
-	    this_object()->catch_tell(process_mxp(sprintf("%s%^LIGHTGREEN%^%s%^RESET%^%s\n"
+	    this_object()->catch_tell(process_mxp(sprintf("%s%^ORANGE%^%s%^RESET%^%s\n"
 		, MXPTAG("RName")
 		, ob->short()
 		, MXPTAG("/RName")
