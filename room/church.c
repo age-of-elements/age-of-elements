@@ -90,7 +90,7 @@ void long(string str)
     write(process_mxp("to the church and %^BOLD%^%^WHITE%^" +
 	MXPTAG("send &text;") + "pray" + MXPTAG("/send") + "%^RESET%^.\n", this_player()->does_mxp()));
     write("There is a clock on the wall.\n");
-    write("There is an exit to south.\n");
+    write(process_mxp("The only obvious is to the " + MXPTAG("Ex") + "south" + MXPTAG("/Ex") + ".\n", this_player()->does_mxp()));
     if (lamp_is_lit)
         write("The lamp beside the elevator is lit.\n");
 

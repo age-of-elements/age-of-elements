@@ -77,6 +77,10 @@ void reset(int arg)
     create_room = environment(me);
 }
 
+int is_npc() {
+    return is_npc;
+}
+
 void random_move()
 {
     int n;

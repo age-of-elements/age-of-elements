@@ -76,12 +76,12 @@ init_mxp() {
     // Switch to "permanent secure" mode, MXP tags now enabled
     write(process_mxp(MXPMODE(6)));
 
-    write(process_mxp(MXPTAG("!-- Set up MXP elements --")));
-    write(process_mxp(MXPTAG("!ELEMENT RNum FLAG=\"RoomNum\" ATT=\"id\" EMPTY")));
-    write(process_mxp(MXPTAG("!ELEMENT RName FLAG=\"RoomName\"")));
-    write(process_mxp(MXPTAG("!ELEMENT RDesc FLAG=\"RoomDesc\"")));
-    write(process_mxp(MXPTAG("!ELEMENT RExits FLAG=\"RoomExit\"")));
-    write(process_mxp(MXPTAG("!ELEMENT Prompt FLAG=\"Prompt\"")));
-    write(process_mxp(MXPTAG("!ELEMENT Ex '<send>'")));
+    write(process_mxp(MXPTAG("!-- Set up MXP elements --"), does_mxp));
+    write(process_mxp(MXPTAG("!ELEMENT RNum FLAG=\"RoomNum\" ATT=\"id\" EMPTY"), does_mxp));
+    write(process_mxp(MXPTAG("!ELEMENT RName FLAG=\"RoomName\""), does_mxp));
+    write(process_mxp(MXPTAG("!ELEMENT RDesc FLAG=\"RoomDesc\""), does_mxp));
+    write(process_mxp(MXPTAG("!ELEMENT RExits FLAG=\"RoomExit\""), does_mxp));
+    write(process_mxp(MXPTAG("!ELEMENT Prompt FLAG=\"Prompt\""), does_mxp));
+    write(process_mxp(MXPTAG("!ELEMENT Ex \"<send>\""), does_mxp));
 }
 #endif // OBJ_LOGIN_MXP_C

@@ -50,6 +50,7 @@ void load_auto_obj(string str);
 void compute_auto_str();
 int vis();
 string check_access_list(string top, string dir, string file);
+string print_prompt(string arg);
 
 /* Some functions to set moving messages. */
 
@@ -1139,9 +1140,57 @@ int look(string str) {
 	mixed desc = environment()->query_description();
 
 	if (stringp(desc)) {
-	    write(process_mxp(sprintf("%s\n", desc), does_mxp()));
+	    write(process_mxp(sprintf("%s%s%s\n", MXPTAG("RDesc"), desc, MXPTAG("/RDesc")), does_mxp()));
 	} else if (closurep(desc)) {
-	    write(process_mxp(sprintf("%s\n", funcall(desc)), does_mxp()));
+	    write(process_mxp(sprintf("%s%s%s\n", MXPTAG("RDesc"), funcall(desc), MXPTAG("/RDesc")), does_mxp()));
+	}
+
+	mapping _exits = environment()->query_exits();
+
+	if (mappingp(_exits)) {
+            int number_of_exits = sizeof(m_indices(_exits));
+            string exit_list;
+
+            if (!number_of_exits) {
+        	exit_list = sprintf("\n    %sThere are no obvious exits.%s\n"
+                    , MXPTAG("RExits")
+                    , MXPTAG("/RExits")
+                  );
+	    } else if (number_of_exits == 1) {
+		exit_list = sprintf("\n    %sThe only obvious exit is:  %s%s%s.%s\n"
+                    , MXPTAG("RExits")
+                    , MXPTAG("Ex")
+                    , m_indices(_exits)[0]
+                    , MXPTAG("/Ex")
+                    , MXPTAG("/RExits")
+                  );
+	    } else {
+		foreach (string ex : m_indices(_exits)) {
+		    if (!exit_list) {
+			exit_list = sprintf("\n    %sThe obvious exits are:  %s%s%s"
+                            , MXPTAG("RExits")
+                            , MXPTAG("Ex")
+                            , ex
+                            , MXPTAG("/Ex")
+                          );
+		    } else if (--number_of_exits > 1) {
+			exit_list += sprintf(", %s%s%s"
+                            , MXPTAG("Ex")
+                            , ex
+                            , MXPTAG("/Ex")
+                          );
+		    } else {
+			exit_list += sprintf(" and %s%s%s.%s\n"
+                            , MXPTAG("Ex")
+                            , ex
+                            , MXPTAG("/Ex")
+                            , MXPTAG("/RExits")
+                          );
+		    }
+		}
+	    }
+
+	    write(process_mxp(exit_list, does_mxp()));
 	}
 #endif
         environment()->long();
@@ -2793,6 +2842,19 @@ string check_access_list(string top, string dir, string file) {
         return 0;
     if (sscanf(access_list, "%s" + dir + "#%s", tmp1, tmp2) == 2)
         return top + dir + "/" + file;
+    return 0;
+}
+
+string print_prompt(string arg) {
+    string prompt = "> ";
+
+    if (arg) {
+	prompt = arg;
+    }
+
+    catch_tell(process_mxp(sprintf("%s%s%s", MXPTAG("Prompt"), prompt, MXPTAG("/Prompt")), does_mxp()));
+    binary_message(({IAC, GA}), 2);
+
     return 0;
 }
 

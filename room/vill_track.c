@@ -1,10 +1,17 @@
-#include "room.h"
+inherit "/lib/room";
 
-#undef EXTRA_RESET
-#define EXTRA_RESET no_castle_flag = 1;
+void create_room() {
+    set_lumens(1);
 
-TWO_EXIT("room/vill_green","west",
-	 "room/vill_road1","east",
-	 "Village track",
-"A track going into the village. The track opens up to a road to the east\n" +
-"and ends with a green lawn to the west.\n", 1)
+    set_brief("Village track");
+
+    set_description(
+	"A track going into the village. The track opens up to a road to "
+	"the east and ends with a green lawn to the west."
+      );
+
+    set_exits( ([
+	"west": "/room/vill_green"
+	, "east": "/room/vill_road1"
+    ]) );
+}

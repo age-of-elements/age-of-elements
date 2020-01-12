@@ -1,8 +1,17 @@
-#include "room.h"
+inherit "/lib/room";
 
-TWO_EXIT("room/mount_pass", "down",
-	 "room/mount_top", "up",
-	 "Ravine",
-	 "You are in a ravine between mountains. It seems to be possible\n"+
-	 "to go up from here.\n", 1)
+void create_room() {
+    set_lumens(1);
 
+    set_brief("Ravine");
+
+    set_description(
+	 "You are in a ravine between mountains. It seems to be possible "
+	"to go up from here."
+      );
+
+    set_exits( ([
+	"down": "/room/mount_pass"
+	,  "up": "/room/mount_top"
+      ]) );
+}
