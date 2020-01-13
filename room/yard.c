@@ -26,7 +26,7 @@ void extra_reset() {
 	beggar->set_level(3);
 	beggar->set_al(200);
 	beggar->set_race("human");
-	beggar->set_long("A really filthy looking poor beggar.\n");
+	beggar->set_long("A really filthy looking poor beggar.");
 	beggar->set_hp(30);
 	move_object(beggar, this_object());
 	if (!action) {

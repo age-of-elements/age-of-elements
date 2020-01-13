@@ -1,34 +1,34 @@
-#include "room.h"
+inherit "/lib/room";
 
-object octopus;
+void create_room() {
+    set_lumens(1);
 
-#undef EXTRA_RESET
-#define EXTRA_RESET extra_reset();
+    set_brief("Sea bottom");
 
-void extra_reset() {
-    if (!octopus || !living(octopus)) {
-	object chest;
-	object money;
-	octopus = clone_object("obj/monster");
-	octopus->set_name("octopus");
-	octopus->set_level(9);
-	octopus->set_hp(100);
-	octopus->set_wc(12);
-	octopus->set_al(-20);
-	octopus->set_short("An octopus");
-	octopus->set_long("A very big octopus with long arms, reaching for you.\n");
-	octopus->set_spell_mess1("The octopus says: Mumble");
-	octopus->set_spell_mess2("The octopus says: I will convert you to a pulp!");
-	octopus->set_chance(20);
-	move_object(octopus, this_object());
-	chest = clone_object("obj/chest");
-	move_object(chest, octopus);
-        money = clone_object("obj/money");
-        money->set_money(random(500));
-        move_object(money, chest);
-    }
+    set_description(
+	"You are at the bottom of the sea."
+      );
+
+    add_exit("up", "/room/sea");
+
+    add_transient_object( ({ "/obj/monster"
+	, ({ "set_name", "octopus" })
+	, ({ "set_short", "An octopus" })
+	, ({ "set_long", "A very big octopus with long arms, reaching for you." })
+	, ({ "set_level", 9 })
+	, ({ "set_hp", 100 })
+	, ({ "set_wc", 12 })
+	, ({ "set_al", -20 })
+	, ({ "set_spell_mess1", "The octopus says: Mumble" })
+	, ({ "set_spell_mess2", "The octopus says: I will convert you to a pulp!" })
+	, ({ "set_chance", 20 })
+	, ({ "add_transient_object", ({ "/obj/chest"
+	    , ({ "add_transient_object", ({ "/obj/money"
+		    , ({ "set_money", random(500) })
+		  })
+		})
+	      })
+	    , "Octopus picks up the chest."
+	  })
+      }) );
 }
-
-ONE_EXIT("room/sea", "up",
-	 "Sea bottom",
-	 "You are at the bottom of the sea.\n", 1)

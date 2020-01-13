@@ -13,7 +13,7 @@
  *    prepared for configuration.
  *
  * 2. If you still is not pleased with that, create a new empty
- *    object, and make an inheritance of this objet on the first line.
+ *    object, and make an inheritance of this object on the first line.
  *    This will automatically copy all variables and functions from the
  *    original object. Then, add the functions you want to change. The
  *    original function can still be accessed with '::' prepended on the name.
@@ -58,23 +58,35 @@ int spell_chance;
 string spell_mess1, spell_mess2;
 object me;
 object create_room;
+nosave mixed *transient_objects;
 
 void random_move();
 void test_match(string str);
 void heal_slowly();
 void pick_any_obj();
+void reset_transient_objects();
 
-void reset(int arg)
+void create()
 {
-    if (arg) {
-	if (move_at_reset)
-	    random_move();
-	return;
-    }
     is_npc = 1;
     enable_commands();
     me = this_object();
     create_room = environment(me);
+
+    if (function_exists("create_monster", this_object())) {
+	this_object()->create_monster();
+    }
+}
+
+void reset(int arg)
+{
+    // Reset transient objects
+    if (pointerp(transient_objects)) {
+	reset_transient_objects();
+    }
+
+    if (move_at_reset)
+	random_move();
 }
 
 int is_npc() {
@@ -100,7 +112,7 @@ string short() {
 }
 
 int long(string str) {
-    write (process_mxp(long_desc, this_player()->does_mxp()));
+    write(process_mxp(sprintf("%s\n", long_desc), this_player()->does_mxp()));
     return 1;
 }
 
@@ -223,26 +235,26 @@ void set_alt_name(string a) { alt_name = a; }
 /* Optional */
 void set_race(string r) { race = r; }
 /* optional */
-void  set_hp(int hp) { max_hp = hp; hit_point = hp; }
+void set_hp(int hp) { max_hp = hp; hit_point = hp; }
 /* optional. Can only be lowered */
 void set_ep(int ep) { if (ep < experience) experience = ep; }
 /* optional */
 void set_al(int al) { alignment = al; }
 /* optional */
-void  set_short(string sh) { short_desc = sh; long_desc = short_desc + "\n";}
+void set_short(string sh) { short_desc = sh; long_desc = short_desc + "\n";}
 /* optional */
-void  set_long(string lo) { long_desc = lo; }
+void set_long(string lo) { long_desc = lo; }
 /* optional */
-void  set_wc(int wc) { if (wc > weapon_class) weapon_class = wc; }
+void set_wc(int wc) { if (wc > weapon_class) weapon_class = wc; }
 /* optional */
-void  set_ac(int ac) { if (ac > armour_class) armour_class = ac; }
+void set_ac(int ac) { if (ac > armour_class) armour_class = ac; }
 /* optional */
 void set_move_at_reset() { move_at_reset = 1; }
 /* optional
  * 0: Peaceful.
  * 1: Attack on sight.
  */
-void  set_aggressive(int a) {
+void set_aggressive(int a) {
     aggressive = a;
 }
 /*
@@ -251,11 +263,11 @@ void  set_aggressive(int a) {
 /*
  * The percent chance of casting a spell.
  */
-void  set_chance(int c) {
+void set_chance(int c) {
     spell_chance = c;
 }
 /* Message to the victim. */
-void  set_spell_mess1(string m) {
+void set_spell_mess1(string m) {
     spell_mess1 = m;
 }
 void set_spell_mess2(string m) {
@@ -421,4 +433,138 @@ void  heal_slowly() {
 	call_out("heal_slowly", 120);
     else
 	healing = 0;
+}
+
+varargs void
+add_transient_object(mixed arg, string handlemsg, int reset_chance)
+{
+    object ob;
+
+    if (!stringp(arg) && !pointerp(arg) && !objectp(arg)) {
+	return;
+    }
+
+    // Accept add_transient_object(object) and optionally write the appearmsg
+    // and calculation to determine if it is moved to the mpnster, however this
+    // monster inheritable will *not* manage their resets.
+    if (objectp(arg)) {
+	ob = arg;
+    }
+
+    if (reset_chance && reset_chance < random(101)) {
+	; // Do nothing
+    } else {
+	if (stringp(arg)) { // A simple file name
+	    catch (ob = clone_object(arg));
+	} else if (pointerp(arg)) { // A more complex array
+	    catch (ob = clone_object(arg[0])); // First element must be the file name
+	}
+
+	if (!ob) {
+	    return; // Cloning failed?
+	}
+
+	if (pointerp(arg)) { // Process call_other's
+	    for (int i = 1, int s = sizeof(arg); i < s; i++) {
+		if (!pointerp(arg[i])) {
+		    continue;
+		}
+
+		if (sizeof(arg[i]) < 2) {
+		    call_other(ob, arg[i][0]);
+		} else {
+		    apply(#'call_other, ob, arg[i][0], arg[i][1..<1]);
+		}
+	    }
+	}
+
+	if (!transient_objects) {
+	    transient_objects = ({});
+	}
+
+	transient_objects += ({({ ob, arg, handlemsg, reset_chance })});
+    }
+
+    if (ob) {
+	move_object(ob, this_object());
+    }
+
+    if (ob && handlemsg) { // Sometimes init() can destroy objects
+	say(sprintf("%s\n", handlemsg), ob);
+    }
+}
+
+void
+reset_transient_objects()
+{
+    foreach (mixed transient_data : transient_objects) {
+	if (!pointerp(transient_data)) {
+	    continue;
+	}
+
+	object ob = transient_data[0];
+	mixed object_info = transient_data[1];
+	string handlemsg = transient_data[2];
+	int reset_chance = transient_data[3];
+
+	if (!object_info || (!stringp(object_info) && !pointerp(object_info))) {
+	    transient_data = 0;
+	    continue;
+	}
+
+	// Check if the object is resettable (in this reset)
+	if (reset_chance && reset_chance < random(101)) {
+	    continue; // Do nothing
+	}
+
+	int new_clone;
+
+	if (!ob) {
+	    new_clone = 1;
+
+	    if (stringp(object_info)) {
+		catch (ob = clone_object(object_info));
+	    } else if (pointerp(object_info)) {
+		catch (ob = clone_object(object_info[0]));
+	    }
+	}
+
+	if (!ob) {
+	    continue; // Cloning failed?
+	}
+
+	if (new_clone) {
+	    if (pointerp(object_info)) { // Process call_other's
+		for (int i = 1, int s = sizeof(object_info); i < s; i++) {
+		    if (!pointerp(object_info[i])) {
+			continue;
+		    }
+
+		    if (sizeof(object_info[i]) < 2) {
+			call_other(ob, object_info[i][0]);
+		    } else {
+			apply(#'call_other, ob, object_info[i][0], object_info[i][1..<1]);
+		    }
+		}
+	    }
+
+	    transient_data[0] = ob;
+	}
+
+	if (!new_clone && ob && present(ob, environment(ob))) {
+	    // Return to this monster.
+	    say(sprintf("%s picks up the %s\n"
+		, this_object()->query_name()
+		, ob->query_name()
+	      ));
+	}
+
+	move_object(ob, this_object());
+
+	if (ob && handlemsg) { // Sometimes init() can destroy objects
+	    say(sprintf("%s\n", handlemsg), ob);
+	}
+    }
+
+    transient_objects -= ({ 0 });
 }
