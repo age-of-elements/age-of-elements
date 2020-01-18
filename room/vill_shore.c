@@ -1,13 +1,22 @@
-#include "room.h"
-#undef EXTRA_RESET
-#define EXTRA_RESET no_castle_flag=1;
-FOUR_EXIT("room/vill_road2","west",
-	 "room/jetty","east",
-         "room/eastroad1","north",
-         "room/crop","south",
-         "Road",
-"You are on a road going out of the village. Eastroad runs north from here,\n"+
-"along the eastern perimeter of the city, and to the south are some fields\n"+
-"planted with all the crops that the city needs. The main road runs towards\n"+
-"the shore to the east, and into the city to the west.\n",
-1)
+inherit "/lib/room";
+
+void create_room() {
+    set_lumens(1);
+
+    set_brief("Road");
+
+    set_description(
+	"You are on a road going out of the village. Eastroad runs north "
+	"from here, along the eastern perimeter of the city, and to the "
+	"south are some fields planted with all the crops that the city "
+	"needs. The main road runs towards the shore to the east, and into "
+	"the city to the west."
+      );
+
+    set_exits( ([
+	"west": "/room/vill_road2"
+	, "east": "/room/jetty"
+	, "north": "/room/eastroad1"
+	, "south": "/room/crop"
+      ]) );
+}

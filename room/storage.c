@@ -1,33 +1,27 @@
-inherit "room/room";
+inherit "/lib/room";
 
-void reset(int arg) {
-    if (arg) return;
+void create_room() {
+    set_lumens(1);
 
-    set_light(1);
-    short_desc = "A small storage room";
-    no_castle_flag = 1;
-    long_desc =
-	"You are in a small and dusty storage room.\n" +
-	    "You can see the shop through the opening to the east.\n";
-    dest_dir = ({"room/shop", "east"});
+    set_brief("A small storage room");
+
+    set_description(
+	"You are in a small and dusty storage room. You can see the shop "
+	"through the opening to the east."
+      );
+
+    add_exit("east", "room/shop");
 }
 
-void init()
-{
-	object	ob;
-	int	does_exist;
+void init_room() {
+    object ob;
+    int does_exist;
 
-	if(this_player()) {
-		if(
-			!present("tech_quicktyper", this_player())
-			&&
-			!present("tech_quicktyper", this_object())
-		) {
-			/* it does no exist */
-			ob = clone_object("obj/quicktyper");
-			move_object(ob, this_object());
-		}
-	}
-	::init();
+    if (!present("tech_quicktyper", this_player())
+	&& !present("tech_quicktyper", this_object())
+      ) {
+	ob = clone_object("obj/quicktyper");
+	move_object(ob, this_object());
+    }
 }
 
