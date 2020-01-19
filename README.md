@@ -168,8 +168,8 @@ sudo yum -y install openssl-devel
 ##### Install python3 ####
 * [Install Python 3.8](https://tecadmin.net/install-python-3-8-amazon-linux/)
 ```
-export PYTHON_CFLAGS=/usr/local/bin/python3.8
-export PYTHON_LIBS=/usr/local/lib/python3.8
+export PYTHON_LIBS=-L/usr/local/lib/python3.8
+export PYTHON_CFLAGS=-I/usr/local/include/python3.8
 mkdir ~/ldmud/python
 cd ~/ldmud/python
 sudo wget https://github.com/ldmud/ldmud/blob/master/doc/examples/python/startup.py
