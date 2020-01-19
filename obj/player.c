@@ -2866,7 +2866,7 @@ varargs string print_prompt(string arg) {
     if (arg && arg != "> ") {
 	prompt = arg;
     } else {
-	prompt = sprintf("%^BOLD%^%^CYAN%^Health:%^RESET%^ %d%^BOLD%^%^CYAN%^/%d%^RESET%^ %^BOLD%^%^CYAN%^Mana:%^RESET%^ %d%^BOLD%^%^CYAN%^/%d%^RESET%^ > "
+	prompt = sprintf("\n%^BOLD%^%^CYAN%^Health:%^RESET%^ %d%^BOLD%^%^CYAN%^/%d%^RESET%^ %^BOLD%^%^CYAN%^Mana:%^RESET%^ %d%^BOLD%^%^CYAN%^/%d%^RESET%^ > "
 	    , hit_point
 	    , max_hp
 	    , spell_points
