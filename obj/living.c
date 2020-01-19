@@ -873,7 +873,7 @@ void force_us(string cmd) {
 /* This is used by the shop etc. */
 void add_money(int m) {
 #ifdef LOG_EXP
-    if (this_player() && this_player() != this_object() &&
+    if (!is_npc && this_player() && this_player() != this_object() &&
       query_ip_number(this_player()) && query_ip_number(this_object()) &&
       level < 20 && m >= ROOM_EXP_LIMIT)
 	log_file("EXPERIENCE", ctime(time()) + " " +name + "(" + level +
