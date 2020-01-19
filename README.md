@@ -213,7 +213,7 @@ Use `nano` or `vi` to create a settings file called `aoe`.
 #
 # configure will strip this part from the script.
 
-exec ./configure --prefix=/home/ec2-user/ldmud --libdir=/home/ec2-user/ldmud/age-of-elements --with-setting=aoe $*
+exec ./configure --prefix=/home/ec2-user/ldmud --libdir=/home/ec2-user/ldmud/age-of-elements --with-python-script=/home/ec2-user/ldmud/python/startup.py --with-setting=aoe $*
 exit 1
 
 # --- The actual settings ---
@@ -276,7 +276,7 @@ mv -f driver_compiletime.log driver_compiletime.log.old
 
 #Start the driver.
 cd $ROOT/bin
-./ldmud --debug-file $ROOT/age-of-elements/log/driver_runtime.log --python-script=$ROOT/python/startup.py --hard-malloc-limit 0 7680 >& $ROOT/age-of-elements/log/driver_compiletime.log &
+./ldmud --debug-file $ROOT/age-of-elements/log/driver_runtime.log --hard-malloc-limit 0 7680 >& $ROOT/age-of-elements/log/driver_compiletime.log &
 
 else
 
