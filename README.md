@@ -192,7 +192,7 @@ rm -rf .git
 ##### Install python3 ####
 * [Install Python 3.8](https://tecadmin.net/install-python-3-8-amazon-linux/)
 ```
-export PYTHON_LIBS=-L/usr/local/lib/python3.8
+export PYTHON_LIBS='-L/usr/local/lib/python3.8 -lpython3.8'
 export PYTHON_CFLAGS=-I/usr/local/include/python3.8
 mkdir ~/ldmud/python
 cd ~/ldmud/python
