@@ -188,9 +188,6 @@ git clone https://github.com/ldmud/ldmud.git
 cd ~/ldmud
 git checkout 3.6
 rm -rf .git
-cd ~/ldmud/src
-./autogen.sh
-cd ~/ldmud/src/settings
 ```
 ##### Install python3 ####
 * [Install Python 3.8](https://tecadmin.net/install-python-3-8-amazon-linux/)
@@ -203,6 +200,11 @@ sudo wget https://github.com/ldmud/ldmud/blob/master/doc/examples/python/startup
 chmod ug+x ~/ldmud/python/startup.py
 ```
 #### Configure Your Game Driver Installation ####
+```
+cd ~/ldmud/src
+./autogen.sh
+cd ~/ldmud/src/settings
+```
 Use `nano` or `vi` to create a settings file called `aoe`.
 ```perl
 #!/bin/sh
