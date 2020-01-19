@@ -165,8 +165,19 @@ sudo yum install mysql-devel
 sudo yum -y install libxml2-devel
 sudo yum -y install openssl-devel
 ```
+##### Install python3 ####
+* [Install Python 3.8](https://tecadmin.net/install-python-3-8-amazon-linux/)
+```
+export PYTHON_CFLAGS=/usr/local/bin/python3.8
+export PYTHON_LIBS=/usr/local/lib/python3.8
+mkdir ~/ldmud/python
+cd ~/ldmud/python
+sudo wget https://github.com/ldmud/ldmud/blob/master/doc/examples/python/startup.py
+chmod ug+x ~/ldmud/python/startup.py
+```
 ##### Install json-c #####
 ```
+cd ~/
 git clone https://github.com/json-c/json-c.git
 cd json-c
 sh autogen.sh
@@ -214,6 +225,7 @@ enable_use_pcre=yes
 enable_use_tls=ssl
 enable_use_json=yes
 enable_use_xml=yes
+enable_use_python=yes
 
 with_master_name=secure/master
 with_portno=7680
@@ -223,7 +235,7 @@ Set permissions with `chmod ug+rw aoe` and `chmod o+x aoe`.
 Run the configuration script, compile then install the game driver.
 ```
 cd ~/ldmud/src
-./configure --prefix=/home/ec2-user/ldmud --libdir=/home/ec2-user/ldmud/age-of-elements --with-setting=aoe
+./configure --prefix=/home/ec2-user/ldmud --libdir=/home/ec2-user/ldmud/age-of-elements --python-script=$ROOT/python/startup.py --with-setting=aoe
 make
 make install
 make install-all
