@@ -21,8 +21,9 @@ the west."
 	, ({ "set_frog", 1 })
 	, ({ "add_transient_object", ({ "/obj/treasure"
 		, ({ "set_id", "crown" })
+		, ({ "set_name", "iron crown" })
 		, ({ "set_value", 30 })
-		, ({ "set_id", "An iron crown" })
+		, ({ "set_short", "An iron crown" })
 	      }) })
       }) );
 }

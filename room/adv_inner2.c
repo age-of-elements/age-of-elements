@@ -1,12 +1,15 @@
-#include "room.h"
+inherit "/lib/room";
 
-#undef EXTRA_RESET
-#define EXTRA_RESET\
-    if (!arg) {\
-	 move_object(clone_object("obj/wiz_bull_board2"), this_object()); \
-    }
+void create_room() {
+    set_lumens(1);
 
-ONE_EXIT("room/adv_inner", "north",
-	 "The LPC board",
-	 "This is the LPC discussion room.\n" +
-	 "Only wizards can access this room.\n", 1)
+    set_brief("The LPC board");
+
+    set_description(
+	 "This is the LPC discussion room. Only wizards can access this room."
+      );
+
+    add_exit("north", "/room/adv_inner");
+
+    add_permanent_object("/obj/wiz_bull_board2");
+}

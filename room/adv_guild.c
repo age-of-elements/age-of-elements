@@ -1,37 +1,37 @@
-#include "std.h"
 #include "tune.h"
 
-#undef EXTRA_RESET
-#define EXTRA_RESET extra_reset(arg);
+inherit "/lib/room";
 
-void extra_reset(int arg) {
-    object ob;
-    if (arg)
-	return;
-    move_object("obj/book", this_object());
-    move_object(clone_object("obj/bull_board"), this_object());
-    ob = clone_object("obj/quest_obj");
-    ob->set_name("orc_slayer");
-    ob->set_hint(
-"Retrieve the Orc slayer from the evil orc shaman, and give it to Leo.\n");
-    move_object(ob, "room/quest_room");
+void create_room() {
+    set_lumens(1);
+
+    set_brief("The Adventurers Guild");
+
+    set_description(
+	"Come here to advance your level. You can also buy points for a "
+	"new level. There is an opening to the south with a shimmering "
+	"blue light in the doorway.\n"
+	"Commands: cost, advance [level, str, dex, int, con], list (number)."
+      );
+
+    add_exit("north", "/room/vill_road2", "north");
+
+    add_permanent_object("/obj/book");
+    add_permanent_object("/obj/bull_board");
+    add_permanent_object( ({ "/obj/quest_obj"
+	, ({ "set_name", "orc_slayer" })
+	, ({ "set_hint", "Retrieve the Orc slayer from the evil orc shaman, \
+and give it to Leo.\n" })
+      }) );
+
+    set_commands( ([
+	"cost": "cost_for_level"
+	, "advance": "advance"
+	, "south": "south"
+	, "banish": "banish"
+	, "list": "list_quests"
+      ]) );
 }
-
-#undef EXTRA_INIT
-#define EXTRA_INIT\
-    add_action("cost_for_level", "cost");\
-    add_action("advance", "advance");\
-    add_action("south", "south");\
-    add_action("banish", "banish");\
-    add_action("list_quests", "list");
-
-ONE_EXIT("room/vill_road2", "north",
-	 "The adventurers guild",
-	 "You have to come here when you want to advance your level.\n" +
-	 "You can also buy points for a new level.\n" +
-	 "Commands: cost, advance [level, str, dex, int, con], list (number).\n" +
-	 "There is an opening to the south, and some shimmering\n" +
-	 "blue light in the doorway.\n", 1)
 
 int next_level;
 int next_exp;
@@ -53,7 +53,7 @@ void alas(string str);
 string gnd_prn();
 
 /* some minor changes by Iggy. */
-/* get level asks get_next_exp() and  get_next_title() */
+/* get level asks get_next_exp() and get_next_title() */
 
 void get_level(int str)
 {
@@ -68,9 +68,9 @@ string *male_title_str, *fem_title_str, *neut_title_str;
 /*xxx  return title */
 string get_new_title(int str)
 {
-    if (!male_title_str){
+    if (!male_title_str) {
 	male_title_str = allocate(20);
-	
+
 	male_title_str[19]	="the apprentice Wizard";
 	male_title_str[18]	="the grand master sorcerer";
 	male_title_str[17]	="the master sorcerer";
@@ -138,20 +138,22 @@ string get_new_title(int str)
 	neut_title_str[1]	="the simple creature";
 	neut_title_str[0]	="the utter creature";
     }
-    if (!player_ob || !player_ob->query_gender())
-	return neut_title_str[str];
-    else if (player_ob->query_gender() == 1)
-	return male_title_str[str];
-    else
-	return fem_title_str[str];
-}
 
+    if (!player_ob || !player_ob->query_gender()) {
+	return neut_title_str[str];
+    } else if (player_ob->query_gender() == 1) {
+	return male_title_str[str];
+    } else {
+	return fem_title_str[str];
+    }
+}
 
 int *exp_str;
 
 /*  returns the next_exp. */
-int get_next_exp(int str) {
-    if(!exp_str){
+int get_next_exp(int str)
+{
+    if (!exp_str) {
 	exp_str = allocate(20);
 
 	exp_str[19]	= 1000000;
@@ -175,6 +177,7 @@ int get_next_exp(int str) {
 	exp_str[1]	=    1014;
 	exp_str[0]	=     676;
     }
+
     return exp_str[str];
 }
 
@@ -185,8 +188,11 @@ int get_next_exp(int str) {
 int query_cost(int l) {
     player_ob = this_player();
     level = l;
-    if (level >= 20)
+
+    if (level >= 20) {
 	return 1000000;
+    }
+
     get_level(level);
     return next_exp;
 }
@@ -195,12 +201,16 @@ int query_cost(int l) {
  * Special function for other guilds to call. Arguments are current level
  * and experience points.
  */
-int query_cost_for_level(int l, int e) {
+int query_cost_for_level(int l, int e)
+{
     level = l;
     exp = e;
     get_level(0);
-    if (next_exp <= exp)
+
+    if (next_exp <= exp) {
 	return 0;
+    }
+
     return (next_exp - exp) * 1000 / EXP_COST;
 }
 
@@ -212,39 +222,46 @@ int cost_for_level()
     level = player_ob->query_level();
 
     cost = raise_cost(player_ob->query_str(), 0);
-    if (cost)
+    if (cost) {
 	write("Str: " + cost + " experience points.\n");
-    else
+    } else {
 	write("Str: Not possible.\n");
+    }
 
     cost = raise_cost(player_ob->query_con(), 0);
-    if (cost)
+    if (cost) {
 	write("Con: " + cost + " experience points.\n");
-    else
+    } else {
 	write("Con: Not possible.\n");
+    }
 
     cost = raise_cost(player_ob->query_dex(), 0);
-    if (cost)
+    if (cost) {
 	write("Dex: " + cost + " experience points.\n");
-    else
+    } else {
 	write("Dex: Not possible.\n");
+    }
 
     cost = raise_cost(player_ob->query_int(), 0);
-    if (cost)
+    if (cost) {
 	write("Int: " + cost + " experience points.\n");
-    else
+    } else {
 	write("Int: Not possible.\n");
+    }
 
     if (level >= 20) {
 	write("You will have to seek other ways.\n");
 	return 1;
     }
+
     exp = player_ob->query_exp(0);
     get_level(level);
+
     if (next_exp <= exp) {
 	write("It will cost you nothing to be promoted.\n");
 	return 1;
     }
+
     write("It will cost you "); write((next_exp - exp) * 1000 / EXP_COST);
     write(" gold coins to advance to level "); write(next_level);
     write(".\n");
@@ -256,50 +273,57 @@ int advance(string arg)
     string name_of_player;
     int cost;
 
-    if (arg == "con")
-    {
+    if (arg == "con") {
 	raise_con();
 	return 1;
     }
 
-    if (arg == "dex")
-    {
+    if (arg == "dex") {
 	raise_dex();
 	return 1;
     }
 
-    if (arg == "int")
-    {
+    if (arg == "int") {
 	raise_int();
 	return 1;
     }
 
-    if (arg == "str")
-    {
+    if (arg == "str") {
 	raise_str();
 	return 1;
     }
 
-    if (arg && arg != "level")
+    if (arg && arg != "level") {
 	return 0;
+    }
 
     player_ob = this_player();
     name_of_player = player_ob->query_name();
     level = player_ob->query_level();
-    if (level == -1)
+    if (level == -1) {
 	level = 0;
+    }
+
     exp = player_ob->query_exp();
     title = player_ob->query_title();
+
     if (level >= 20) {
 	write("You are still "); write(title); write("\n");
 	return 1;
     }
+
     get_level(level);
-    if (next_level == 20 && "room/quest_room"->count())
+
+    if (next_level == 20 && "room/quest_room"->count()) {
 	return 1;
-    if (level == 0)
+    }
+
+    if (level == 0) {
 	next_exp = exp;
+    }
+
     cost = (next_exp - exp) * 1000 / EXP_COST;
+
     if (next_exp > exp) {
 	if (player_ob->query_money() < cost) {
 	    write("You don't have enough gold coins.\n");
@@ -307,31 +331,39 @@ int advance(string arg)
 	}
 	player_ob->add_money(- cost);
     }
+
     say(player_ob->query_name() + " is now level " +
 	next_level + ".\n");
     player_ob->set_level(next_level);
     player_ob->set_title(title);
-    if (exp < next_exp)
+
+    if (exp < next_exp) {
         player_ob->add_exp(next_exp - exp);
+    }
+
     if (next_level < 7) {
 	write("You are now " + name_of_player + " " + title +
 	      " (level " + next_level + ").\n");
 	return 1;
     }
+
     if (next_level < 14) {
 	write("Well done, " + name_of_player + " " + title +
 	      " (level " + next_level + ").\n");
 	return 1;
     }
+
     if (next_level < 20) {
 	write("Welcome to your new class, mighty one.\n" +
 	      "You are now " + title + " (level " + next_level + ").\n");
     }
+
     if (next_level == 20) {
 	write("A new Wizard has been born.\n");
 	shout("A new Wizard has been born.\n");
 	return 1;
     }
+
     return 1;
 }
 
@@ -339,99 +371,117 @@ void raise_con()
 {
     int lvl;
 
-    if (too_high_average())
+    if (too_high_average()) {
 	return;
+    }
+
     lvl = this_player()->query_con();
+
     if (lvl >= 20) {
 	alas("tough and endurable");
 	return;
     }
-    if (raise_cost(lvl, 1))
-    {
+
+    if (raise_cost(lvl, 1)) {
 	this_player()->set_con(lvl + 1);
 	write("Ok.\n");
-    }
-    else
+    } else {
 	write("You don't have enough experience.\n");
+    }
 }
 
 void raise_dex()
 {
     int lvl;
 
-    if (too_high_average())
+    if (too_high_average()) {
 	return;
+    }
+
     lvl = this_player()->query_dex();
+
     if (lvl >= 20) {
 	alas("skilled and vigorous");
 	return;
     }
-    if (raise_cost(lvl, 1))
-    {
+
+    if (raise_cost(lvl, 1)) {
 	this_player()->set_dex(lvl + 1);
 	write("Ok.\n");
-    }
-    else
+    } else {
 	write("You don't have enough experience.\n");
+    }
 }
 
 void raise_int()
 {
     int lvl;
 
-    if (too_high_average())
+    if (too_high_average()) {
 	return;
+    }
+
     lvl = this_player()->query_int();
+
     if (lvl >= 20) {
 	alas("knowledgeable and wise");
 	return;
     }
-    if (raise_cost(lvl, 1))
-    {
+
+    if (raise_cost(lvl, 1)) {
 	this_player()->set_int(lvl + 1);
 	write("Ok.\n");
-    }
-    else
+    } else {
 	write("You don't have enough experience.\n");
+    }
 }
 
-void raise_str()
-{
+void raise_str() {
     int lvl;
 
-    if (too_high_average())
+    if (too_high_average()) {
 	return;
+    }
+
     lvl = this_player()->query_str();
+
     if (lvl >= 20) {
 	alas("strong and powerful");
 	return;
     }
-    if (raise_cost(lvl, 1))
-    {
+
+    if (raise_cost(lvl, 1)) {
 	this_player()->set_str(lvl + 1);
 	write("Ok.\n");
-    }
-    else
+    } else {
 	write("You don't have enough experience.\n");
+    }
 }
 
 /*
  * Compute cost for raising a stat one level. 'base' is the level that
  * you have now, but never less than 1.
  */
-int raise_cost(int base, int  action)
-{
+int raise_cost(int base, int action) {
     int cost, saldo;
 
-    if (base >= 20)
+    if (base >= 20) {
 	return 0;
+    }
+
     cost = (get_next_exp(base) - get_next_exp(base - 1)) / STAT_COST;
+
     saldo = this_player()->query_exp() -
 	get_next_exp(this_player()->query_level()- 1);
-    if (action == 0)
+
+    if (action == 0) {
 	return cost;
-    if (saldo < cost)
+    }
+
+    if (saldo < cost) {
 	return 0;
+    }
+
     this_player()->add_exp(-cost);
     return cost;
 }
@@ -441,39 +491,51 @@ int raise_cost(int base, int  action)
  */
 int banish(string who) {
     level = this_player()->query_level();
-    if (level < 21)
+
+    if (level < 21) {
 	return 0;
+    }
+
     if (!who) {
-	write("Who ?\n");
+	write("Who?\n");
 	return 1;
     }
-    if (!this_player()->valid_name(who))
+
+    if (!this_player()->valid_name(who)) {
 	return 1;
+    }
+
     if (restore_object("players/" + who)) {
 	write("That name is already used.\n");
 	return 1;
     }
+
     if (restore_object("banish/" + who)) {
 	write("That name is already banished.\n");
 	return 1;
     }
+
     banished_by = this_player()->query_name();
     title = this_player()->query_title();
+
     if (banished_by == "Someone") {
 	write("You must not be invisible!\n");
 	return 1;
     }
+
     save_object("banish/" + who);
     return 1;
 }
 
-int south() {
+int south()
+{
     if (this_player()->query_level() < 20) {
 	write("A strong magic force stops you.\n");
 	say(this_player()->query_name(0) +
 	    " tries to go through the field, but fails.\n");
 	return 1;
     }
+
     write("You wriggle through the force field...\n");
     this_player()->move_player("south#room/adv_inner");
     return 1;
@@ -482,10 +544,13 @@ int south() {
 int list_quests(string num)
 {
     int qnumber;
-    if (num && (sscanf(num, "%d", qnumber) == 1))
+
+    if (num && (sscanf(num, "%d", qnumber) == 1)) {
 	"room/quest_room"->list(qnumber);
-    else
+    } else {
 	"room/quest_room"->count();
+    }
+
     return 1;
 }
 
@@ -496,16 +561,19 @@ int query_drop_castle() {
 void alas(string what) {
     write("Sorry " + gnd_prn() + ", but you are already as " + what +
 	  "\nas any");
-    if (this_player()->query_gender() == 0)
+
+    if (this_player()->query_gender() == 0) {
 	write("thing could possibly hope to get.\n");
-    else
+    } else {
 	write("one could possibly hope to get.\n");
+    }
 }
 
 /*
  * Check that the player does not have too high average of the stats.
  */
-int too_high_average() {
+int too_high_average()
+{
     if ((this_player()->query_con() + this_player()->query_str() +
 	 this_player()->query_int() + this_player()->query_dex()) / 4 >=
             this_player()->query_level() + 3) {
@@ -513,17 +581,21 @@ int too_high_average() {
 	      ", but you are not of high enough level.\n");
 	return 1;
     }
+
     return 0;
 }
 
-string gnd_prn() {
+string gnd_prn()
+{
     int gnd;
 
     gnd = this_player()->query_gender();
-    if (gnd == 1)
+
+    if (gnd == 1) {
 	return "sir";
-    else if (gnd == 2)
+    } else if (gnd == 2) {
 	return "madam";
-    else
+    } else {
 	return "best creature";
+    }
 }

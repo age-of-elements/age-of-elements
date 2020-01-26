@@ -1,82 +1,116 @@
+#include <mxp.h>
+
+inherit "/lib/room";
+
 int lamp_is_lit;
 
-void reset(int arg)
-{
-    if (arg)
-	return;
-    set_light(1);
+string query_door_state();
+string query_lamp_state();
+
+void create_room() {
+    set_lumens(1);
+
+    set_brief("The attic");
+
+    set_description(
+	"This is the attic above the church. There is a door to the west "
+	"with a " + MXPTAG("send 'push &text;' HINT='push button'") +
+	"button" + MXPTAG("/send") + " beside it."
+      );
+
+    set_items( ([
+	"door": #'query_door_state
+	, "lamp": #'query_lamp_state
+	, "button": "A button that looks like it wants pressed."
+      ]) );
+
+    set_commands( ([
+	"west": "west"
+	, "open": "open"
+	, "push": "push"
+	, "press": "push"
+	, "close": "close"
+      ]) );
 }
 
-void init()
+string query_door_state()
 {
-    add_action("west", "west");
-    add_action("open", "open");
-    add_action("push", "push");
-    add_action("push", "press");
-    add_action("close", "close");
-}
-
-string short() {
-    return "The attic";
-}
-
-void long(string str)
-{
-    if (str == "door") {
-	if (!"room/elevator"->query_door() &&
-	    "room/elevator"->query_level())
-	    write("The door is open.\n");
-	else
-	    write("The door is closed.\n");
-	return;
+    if (!"room/elevator"->query_door()
+	&& "room/elevator"->query_level()) {
+        return "The door is open.";
     }
-    write("This is the attic above the church.\n" +
-	"There is a door to the west.\n");
-    if (lamp_is_lit)
-        write("The lamp beside the elevator is lit.\n");
 
+    return "The door is closed.";
 }
 
-int id(string str) {
-    return str == "door";
+string query_lamp_state()
+{
+    if (lamp_is_lit) {
+	return  "The lamp beside the elevator is lit.";
+    }
+
+    return  "The lamp beside the elevator is not lit.";
 }
 
-int west() {
+mixed query_description()
+{
+    return sprintf("%s %s %s"
+        , ::query_description()
+        , funcall(#'query_door_state)
+        , funcall(#'query_lamp_state)
+      );
+}
+
+int west()
+{
     if ("room/elevator"->query_door() ||
 	"room/elevator"->query_level() != 3) {
 	write("The door is closed.\n");
 	return 1;
     }
+
     this_player()->move_player("west#room/elevator");
     return 1;
 }
 
 int open(string str)
 {
-    if (str != "door")
-	return 0;
+    if (str != "door") {
+	return notify_fail("Open what?\n"), 0;
+    }
+
     if ("room/elevator"->query_level() != 3) {
-	write("You can't when the elevator isn't here.\n");
+	write("The elevator is not here. Did you push the button?\n");
 	return 1;
     }
+
     "room/elevator"->open_door("door");
     return 1;
 }
 
 int close(string str)
 {
-    if (str != "door")
-	return 0;
+    if (str != "door") {
+	return notify_fail("Close what?\n"), 0;
+    }
+
     "room/elevator"->close_door("door");
     return 1;
 }
 
 int push(string str)
 {
-    if (str && str != "button")
-	return 0;
-    if ("room/elevator"->call_elevator(3))
+    if (str && str != "button") {
+	return notify_fail(
+	    sprintf("%s what?\n"
+		, capitalize(query_verb())
+	      )), 0;
+    }
+
+    if ("room/elevator"->call_elevator(3)) {
 	lamp_is_lit = 1;
+    }
+
     return 1;
 }
 

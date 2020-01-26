@@ -13,7 +13,7 @@ void create_room() {
 	,  "east": "/room/pub2"
       ]) );
 
-    add_transient_object("/room/npc/beggar", "Beggar arrives");
+    add_transient_object("/room/npc/beggar", "Beggar arrives.");
 
     add_transient_object( ({ "/obj/weapon"
 	, ({ "set_name", "knife" })

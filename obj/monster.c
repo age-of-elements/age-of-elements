@@ -551,12 +551,14 @@ reset_transient_objects()
 	    transient_data[0] = ob;
 	}
 
-	if (!new_clone && ob && present(ob, environment(ob))) {
+	if (!new_clone && ob && present(ob, environment(this_object()))) {
 	    // Return to this monster.
-	    say(sprintf("%s picks up the %s\n"
-		, this_object()->query_name()
-		, ob->query_name()
-	      ));
+	    if (ob->query_name()) {
+		say(sprintf("%s picks up the %s.\n"
+		    , this_object()->query_name()
+		    , ob->query_name()
+		  ));
+	    }
 	}
 
 	move_object(ob, this_object());
