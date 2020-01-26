@@ -36,11 +36,11 @@ void give_beggar(string str)
 
     say("Beggar says: Thank you.\n");
 
-//    if (query_money() >= 12
-//	&& object_name(environment(this_object())) == "room/yard.c") {
+    if (query_money() >= 12
+	&& object_name(environment(this_object())) == "room/yard.c") {
 	command("east");
 	command("buy beer");
 	command("drink beer");
 	command("west");
-//    }
+    }
 }

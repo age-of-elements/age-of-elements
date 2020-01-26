@@ -1153,9 +1153,9 @@ int look(string str) {
 	mixed desc = environment()->query_description();
 
 	if (stringp(desc)) {
-	    write(process_mxp(sprintf("%s%s%s\n", MXPTAG("RDesc"), desc, MXPTAG("/RDesc")), does_mxp()));
+	    catch_tell(process_mxp(sprintf("%s%s%s\n", MXPTAG("RDesc"), desc, MXPTAG("/RDesc")), does_mxp()));
 	} else if (closurep(desc)) {
-	    write(process_mxp(sprintf("%s%s%s\n", MXPTAG("RDesc"), funcall(desc), MXPTAG("/RDesc")), does_mxp()));
+	    catch_tell(process_mxp(sprintf("%s%s%s\n", MXPTAG("RDesc"), funcall(desc), MXPTAG("/RDesc")), does_mxp()));
 	}
 
 	mapping _exits = environment()->query_exits();
@@ -1203,7 +1203,7 @@ int look(string str) {
 		}
 	    }
 
-	    write(process_mxp(exit_list, does_mxp()));
+	    catch_tell(process_mxp(exit_list, does_mxp()));
 	}
 #endif
         environment()->long();
@@ -1238,9 +1238,9 @@ int look(string str) {
         it = item;
 	if (ob->query_item(item)) {
 	    if (stringp(ob->query_item(item))) {
-		write(process_mxp(sprintf("%s\n", ob->query_item(item)), does_mxp()));
+		catch_tell(process_mxp(sprintf("%s\n", ob->query_item(item)), does_mxp()));
 	    } else if (closurep(ob->query_item(item))) {
-		write(process_mxp(sprintf("%s\n", funcall(ob->query_item(item))), does_mxp()));
+		catch_tell(process_mxp(sprintf("%s\n", funcall(ob->query_item(item))), does_mxp()));
 	    }
 	} else {
 	    ob->long(item);
@@ -1257,7 +1257,7 @@ int look(string str) {
         if (living(ob)) {
             object special;
             special = first_inventory(ob);
-            while(special) {
+            while (special) {
                 string extra_str;
                 extra_str = special->extra_look();
                 if (extra_str)
@@ -1266,7 +1266,7 @@ int look(string str) {
             }
         }
         ob_tmp = first_inventory(ob);
-        while(ob_tmp && ob_tmp->short() == 0)
+        while (ob_tmp && ob_tmp->short() == 0)
             ob_tmp = next_inventory(ob_tmp);
         if (ob_tmp) {
            if (living(ob)) {
