@@ -190,6 +190,7 @@ git checkout 3.6
 rm -rf .git
 ```
 ##### Install python3 ####
+***Skip this python3 section for now - This is work-in-progress***
 * [Install Python 3.8](https://tecadmin.net/install-python-3-8-amazon-linux/)
 ```
 export PYTHON_LIBS='-L/usr/local/lib/python3.8 -lpython3.8'
@@ -227,7 +228,7 @@ enable_use_pcre=yes
 enable_use_tls=ssl
 enable_use_json=yes
 enable_use_xml=yes
-enable_use_python=yes
+#enable_use_python=yes
 
 with_master_name=secure/master
 with_portno=7680
