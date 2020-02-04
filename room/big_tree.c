@@ -1,6 +1,10 @@
-inherit "/lib/room";
+#include <global.h>
 
-void create_room() {
+inherit LIB_ROOM;
+
+void
+create_room()
+{
     set_lumens(1);
 
     set_brief("Big tree");
@@ -22,7 +26,8 @@ void create_room() {
     add_transient_object("/obj/rope");
 }
 
-int id(string str)
+int
+id(string str)
 {
     if (str == "tree" || str == "big tree") {
 	return 1;
@@ -31,7 +36,8 @@ int id(string str)
     return 0;
 }
 
-int tie(string str)
+int
+tie(string str)
 {
     if (str == "tree" || str == "big tree") {
 	write("The branches are very high up.\n");
@@ -41,7 +47,8 @@ int tie(string str)
     return 0;
 }
 
-int climb(string str)
+int
+climb(string str)
 {
     if (!id(str)) {
 	return 0;

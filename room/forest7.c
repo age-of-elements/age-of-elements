@@ -1,6 +1,20 @@
-#include "room.h"
+#include <global.h>
 
-TWO_EXIT("room/forest10", "west",
-	 "room/forest4", "north",
-	 "Deep forest",
-	 "You are in the deep forest.\n", 1)
+inherit LIB_ROOM;
+
+void
+create_room()
+{
+    set_lumens(1);
+
+    set_brief("Deep forest");
+
+    set_description(
+	"You are in the deep forest."
+      );
+
+    set_exits( ([
+	"west": "/room/forest10"
+	, "north": "/room/forest4"
+      ]) );
+}

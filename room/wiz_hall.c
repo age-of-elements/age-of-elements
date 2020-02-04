@@ -55,7 +55,7 @@ string query_lamp_state()
     return  "The lamp beside the elevator is not lit.";
 }
 
-mixed query_description()
+string query_description()
 {
     return sprintf("%s %s %s"
         , ::query_description()

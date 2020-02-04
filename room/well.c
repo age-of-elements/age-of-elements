@@ -46,7 +46,7 @@ string query_door_state()
     return "The door is open.";
 }
 
-mixed query_description() {
+string query_description() {
     return sprintf("%s %s"
 	, ::query_description()
 	, funcall(#'query_door_state)

@@ -1,11 +1,15 @@
-inherit "lib/room";
+#include <global.h>
+
+inherit LIB_ROOM;;
 
 int door_is_open = 0;
 int door_is_locked = 1;
 
 string query_door_state();
 
-void create_room() {
+void
+create_room()
+{
     set_lumens(1);
 
     set_brief("The Bank");
@@ -58,12 +62,15 @@ warriors and guards." })
     ]) );
 }
 
-void reset_room() {
+void
+reset_room()
+{
     door_is_open = 0;
     door_is_locked = 1;
 }
 
-string query_door_state()
+string
+query_door_state()
 {
     if (door_is_open) {
 	return "The door is open.";
@@ -72,7 +79,8 @@ string query_door_state()
     return "The door is closed.";
 }
 
-int open(string str)
+int
+open(string str)
 {
     if (str && str != "door") {
 	return notify_fail("Open what?\n"), 0;
@@ -95,7 +103,8 @@ int open(string str)
     return 1;
 }
 
-int unlock(string str)
+int
+unlock(string str)
 {
     if (str && str != "door") {
 	return notify_fail("Unlock what?\n"), 0;
@@ -121,7 +130,8 @@ int unlock(string str)
     return 1;
 }
 
-int east()
+int
+east()
 {
     if (!door_is_open) {
 	write("The door is closed.\n");
@@ -137,12 +147,14 @@ int east()
     return 1;
 }
 
-int query_door()
+int
+query_door()
 {
     return !door_is_open;
 }
 
-void open_door_inside()
+void
+open_door_inside()
 {
     door_is_locked = 0;
     door_is_open = 1;

@@ -1,95 +1,102 @@
-void extra_reset()
-{
-    object orc, weapon;
-    int n,i,class,value,weight;
-    string w_name,alt_name;
+#include <global.h>
 
-    i = 0;
-    if (!present("orc")) {
-	while(i<8) {
-	    i += 1;
-	    orc = clone_object("obj/monster");
-	    orc->set_name("orc");
-	    orc->set_alias("dirty crap");
-	    orc->set_race("orc");
-	    orc->set_level(random(2) + 1);
-	    orc->set_hp(30);
-	    orc->set_ep(1014);
-	    orc->set_al(-60);
-	    orc->set_short("An orc");
-	    orc->set_ac(0);
-	    orc->set_aggressive(1);
-	    orc->load_a_chat(40, "room/orc_vall"->get_chats());
-	    n = random(3);
-	    weapon = clone_object("obj/weapon");
-	    if (n == 0) {
-		w_name = "knife";
-		class = 5;
-		value = 8;
-		weight = 1;
-		alt_name = "knife";  /* JnA: 901127 axes != knives */
-	    }
-	    if (n == 1) {
-		w_name = "curved knife";
-		class = 7;
-		value = 15;
-		weight = 1;
-		alt_name = "knife";
-	    }
-	    if (n == 2) {
-		w_name = "hand axe";
-		class = 9;
-		value = 25;
-		weight = 2;
-		alt_name = "axe";
-	    }
-	    weapon->set_name(w_name);
-	    weapon->set_class(class);
-	    weapon->set_value(value);
-	    weapon->set_weight(weight);
-	    weapon->set_alt_name(alt_name);
-	    transfer(weapon, orc);
-	    command("wield " + w_name, orc);
-	    move_object(orc, this_object());
-	}
+inherit LIB_ROOM;
+
+void
+create_room()
+{
+    set_lumens(1);
+
+    set_brief("An Orc Fortress");
+
+    set_description(
+	"This is the local strong point of the orcs. There is an entrance "
+	"to a small room to the north."
+      );
+
+    add_exit("south", "/room/orc_vall");
+
+    add_command("north", "north");
+
+    mixed *weapon_data = ({
+	([
+	    "name": "knife"
+	    , "class": 5
+	    , "value": 8
+	    , "weight": 1
+	    , "alt_name": "knife"
+	])
+	, ([
+	    "name": "curved knife"
+	    , "class": 7
+	    , "value": 15
+	    , "weight": 1
+	    , "alt_name": "knife"
+	])
+	, ([
+	    "name": "hand axe"
+	    , "class": 9
+	    , "value": 25
+	    , "weight": 2
+	    , "alt_name": "axe"
+	])
+      });
+
+    string *orc_adjectives = ({
+	"dirty"
+	, "smelly"
+	, "stinky"
+	, "stupid"
+	, "tall"
+	, "short"
+	, "fat"
+	, "thin"
+      });
+
+    for (int i = 0; i < 8; i++) {
+	mapping selected_weapon = copy(
+	    weapon_data[random(sizeof(weapon_data))]
+	  );
+
+	mixed *weapon_info = ({ "/obj/weapon"
+	    , ({ "set_name", selected_weapon["name"] })
+	    , ({ "set_class", selected_weapon["class"] })
+	    , ({ "set_value", selected_weapon["value"] })
+	    , ({ "set_weight", selected_weapon["weight"] })
+	    , ({ "set_alt_name", selected_weapon["alt_name"] })
+	  });
+
+	string orc_adjective = orc_adjectives[random(sizeof(orc_adjectives))];
+
+	mixed *orc_info = ({ "/obj/monster"
+	    , ({ "set_name", sprintf("%s orc", orc_adjective) })
+	    , ({ "set_alias", "orc" })
+	    , ({ "set_race", "orc" })
+	    , ({ "set_short", sprintf("%s orc", capitalize(orc_adjective)) })
+	    , ({ "set_level", (random(2) + 1) })
+	    , ({ "set_hp", 30 })
+	    , ({ "set_ep", 1014 })
+	    , ({ "set_al", -60 })
+	    , ({ "set_ac", 0 })
+	    , ({ "set_aggressive", 1 })
+	    , ({ "load_a_chat", "room/orc_vall"->get_chats() })
+	    , ({ "add_transient_object", weapon_info })
+	  });
+
+	add_transient_object(orc_info, "Orc arrives.");
     }
 }
-void init()
-{
-    add_action("south", "south");
-    add_action("north", "north");
-}
 
-int north()
+int
+north()
 {
-    if (present("orc")) {
+    object orc;
+
+    if ((orc = present("orc")) && orc->is_npc()) {
 	write("An orc bars your way.\n");
 	return 1;
     }
+
     this_player()->move_player("north#room/orc_treasure");
     return 1;
 }
-
-int south()
-{
-    this_player()->move_player("south#room/orc_vall");
-    return 1;
-}
-
-void long()
-{
-    write("This is the local strong point of the orcs.\n");
-    write("There is an entrance to a small room to the north.\n");
-}
-
-string short() {
-    return "The orc fortress";
-}
-
-void reset(int arg)
-{
-    if (!arg)
-	set_light(1);
-    extra_reset();
-}
-

@@ -58,7 +58,7 @@ void reset_room() {
     rmm = FOODS;
 }
 
-mixed query_description() {
+string query_description() {
     return sprintf("%s\n\n%s", ::query_description(), funcall(#'show_menu));
 }
 

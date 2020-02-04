@@ -1,6 +1,10 @@
-inherit "/lib/room";
+#include <global.h>
 
-void create_room() {
+inherit LIB_ROOM;
+
+void
+create_room()
+{
     set_lumens(1);
 
     set_brief("Deep forest");

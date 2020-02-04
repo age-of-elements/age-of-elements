@@ -1,8 +1,11 @@
 #include "tune.h"
+#include <global.h>
 
-inherit "/lib/room";
+inherit LIB_ROOM;
 
-void create_room() {
+void
+create_room()
+{
     set_lumens(1);
 
     set_brief("The Adventurers Guild");
@@ -55,7 +58,8 @@ string gnd_prn();
 /* some minor changes by Iggy. */
 /* get level asks get_next_exp() and get_next_title() */
 
-void get_level(int str)
+void
+get_level(int str)
 {
 	level = str;
 
@@ -66,7 +70,8 @@ void get_level(int str)
 
 string *male_title_str, *fem_title_str, *neut_title_str;
 /*xxx  return title */
-string get_new_title(int str)
+string
+get_new_title(int str)
 {
     if (!male_title_str) {
 	male_title_str = allocate(20);
@@ -151,7 +156,8 @@ string get_new_title(int str)
 int *exp_str;
 
 /*  returns the next_exp. */
-int get_next_exp(int str)
+int
+get_next_exp(int str)
 {
     if (!exp_str) {
 	exp_str = allocate(20);
@@ -185,7 +191,8 @@ int get_next_exp(int str)
  * This routine is called by monster, to calculate how much they are worth.
  * This value should not depend on the tuning.
  */
-int query_cost(int l) {
+int
+query_cost(int l) {
     player_ob = this_player();
     level = l;
 
@@ -201,7 +208,8 @@ int query_cost(int l) {
  * Special function for other guilds to call. Arguments are current level
  * and experience points.
  */
-int query_cost_for_level(int l, int e)
+int
+query_cost_for_level(int l, int e)
 {
     level = l;
     exp = e;
@@ -214,7 +222,8 @@ int query_cost_for_level(int l, int e)
     return (next_exp - exp) * 1000 / EXP_COST;
 }
 
-int cost_for_level()
+int
+cost_for_level()
 {
     int cost;
 
@@ -268,7 +277,8 @@ int cost_for_level()
     return 1;
 }
 
-int advance(string arg)
+int
+advance(string arg)
 {
     string name_of_player;
     int cost;
@@ -367,7 +377,8 @@ int advance(string arg)
     return 1;
 }
 
-void raise_con()
+void
+raise_con()
 {
     int lvl;
 
@@ -390,7 +401,8 @@ void raise_con()
     }
 }
 
-void raise_dex()
+void
+raise_dex()
 {
     int lvl;
 
@@ -413,7 +425,8 @@ void raise_dex()
     }
 }
 
-void raise_int()
+void
+raise_int()
 {
     int lvl;
 
@@ -436,7 +449,8 @@ void raise_int()
     }
 }
 
-void raise_str() {
+void
+raise_str() {
     int lvl;
 
     if (too_high_average()) {
@@ -462,7 +476,8 @@ void raise_str() {
  * Compute cost for raising a stat one level. 'base' is the level that
  * you have now, but never less than 1.
  */
-int raise_cost(int base, int action) {
+int
+raise_cost(int base, int action) {
     int cost, saldo;
 
     if (base >= 20) {
@@ -489,7 +504,8 @@ int raise_cost(int base, int action) {
 /*
  * Banish a monster name from being used.
  */
-int banish(string who) {
+int
+banish(string who) {
     level = this_player()->query_level();
 
     if (level < 21) {
@@ -527,7 +543,8 @@ int banish(string who) {
     return 1;
 }
 
-int south()
+int
+south()
 {
     if (this_player()->query_level() < 20) {
 	write("A strong magic force stops you.\n");
@@ -541,7 +558,8 @@ int south()
     return 1;
 }
 
-int list_quests(string num)
+int
+list_quests(string num)
 {
     int qnumber;
 
@@ -554,11 +572,8 @@ int list_quests(string num)
     return 1;
 }
 
-int query_drop_castle() {
-    return 1;
-}
-
-void alas(string what) {
+void
+alas(string what) {
     write("Sorry " + gnd_prn() + ", but you are already as " + what +
 	  "\nas any");
 
@@ -572,7 +587,8 @@ void alas(string what) {
 /*
  * Check that the player does not have too high average of the stats.
  */
-int too_high_average()
+int
+too_high_average()
 {
     if ((this_player()->query_con() + this_player()->query_str() +
 	 this_player()->query_int() + this_player()->query_dex()) / 4 >=
@@ -585,7 +601,8 @@ int too_high_average()
     return 0;
 }
 
-string gnd_prn()
+string
+gnd_prn()
 {
     int gnd;
 

@@ -1,6 +1,7 @@
+#include <global.h>
 #include <mxp.h>
 
-inherit "/lib/room";
+inherit LIB_ROOM;
 
 int reboot_time, time_from_reset, last_reset_cycle, lamp_is_lit, list_length;
 
@@ -8,7 +9,9 @@ string query_door_state();
 string query_lamp_state();
 string query_clock_state();
 
-void create_room() {
+void
+create_room()
+{
     reboot_time = time();
     time_from_reset = time();
 
@@ -53,7 +56,9 @@ sacrifice in the old times, but nowadays it is only left for tourists to look at
       ]) );
 }
 
-void reset_room() {
+void
+reset_room()
+{
     if (time_from_reset) {
 	last_reset_cycle = time() - time_from_reset;
     }
@@ -61,7 +66,8 @@ void reset_room() {
     time_from_reset = time();
 }
 
-string query_door_state()
+string
+query_door_state()
 {
     if (!"room/elevator"->query_door()
 	&& "room/elevator"->query_level(0)) {
@@ -71,7 +77,8 @@ string query_door_state()
     return "The door is closed.";
 }
 
-string query_lamp_state()
+string
+query_lamp_state()
 {
     if (lamp_is_lit) {
 	return  "The lamp beside the elevator is lit.";
@@ -80,7 +87,8 @@ string query_lamp_state()
     return  "The lamp beside the elevator is not lit.";
 }
 
-mixed query_description()
+string
+query_description()
 {
     return sprintf("%s %s %s"
         , ::query_description()
@@ -89,7 +97,8 @@ mixed query_description()
       );
 }
 
-string query_clock_state()
+string
+query_clock_state()
 {
     string ret;
     int i, j;
@@ -131,7 +140,7 @@ string query_clock_state()
 	ret += sprintf("%d seconds", i);
     }
 
-    ret += "\n";
+    ret += ".\n";
 
     if (this_player()->query_level() < 20) {
 	return ret;
@@ -150,7 +159,8 @@ string query_clock_state()
     return ret;
 }
 
-int west()
+int
+west()
 {
     if ("room/elevator"->query_door(0) ||
 	"room/elevator"->query_level(0) != 2) {
@@ -162,7 +172,8 @@ int west()
     return 1;
 }
 
-int open(string str)
+int
+open(string str)
 {
     if (str != "door") {
 	return notify_fail("Open what?\n"), 0;
@@ -177,7 +188,8 @@ int open(string str)
     return 1;
 }
 
-int close(string str)
+int
+close(string str)
 {
     if (str != "door") {
 	return notify_fail("Close what?\n"), 0;
@@ -187,7 +199,8 @@ int close(string str)
     return 1;
 }
 
-int push(string str)
+int
+push(string str)
 {
     if (str && str != "button") {
 	return notify_fail(sprintf("%s what?\n"
@@ -201,13 +214,15 @@ int push(string str)
     return 1;
 }
 
-void elevator_arrives()
+void
+elevator_arrives()
 {
     say("The lamp on the button beside the elevator goes out.\n");
     lamp_is_lit = 0;
 }
 
-int pray()
+int
+pray()
 {
     int ret = this_player()->remove_ghost();
 
@@ -218,7 +233,8 @@ int pray()
     return 1;
 }
 
-int prevent_look_at_inv(string str)
+int
+prevent_look_at_inv(string str)
 {
     return str != 0;
 }

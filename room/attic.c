@@ -1,13 +1,16 @@
+#include <global.h>
 #include <mxp.h>
 
-inherit "/lib/room";
+inherit LIB_ROOM;
 
 int lamp_is_lit;
 
 string query_door_state();
 string query_lamp_state();
 
-void create_room() {
+void
+create_room()
+{
     set_lumens(1);
 
     set_brief("The attic");
@@ -33,7 +36,8 @@ void create_room() {
       ]) );
 }
 
-string query_door_state()
+string
+query_door_state()
 {
     if (!"room/elevator"->query_door()
 	&& "room/elevator"->query_level()) {
@@ -43,7 +47,8 @@ string query_door_state()
     return "The door is closed.";
 }
 
-string query_lamp_state()
+string
+query_lamp_state()
 {
     if (lamp_is_lit) {
 	return  "The lamp beside the elevator is lit.";
@@ -52,7 +57,8 @@ string query_lamp_state()
     return  "The lamp beside the elevator is not lit.";
 }
 
-mixed query_description()
+string
+query_description()
 {
     return sprintf("%s %s %s"
         , ::query_description()
@@ -61,7 +67,8 @@ mixed query_description()
       );
 }
 
-int west()
+int
+west()
 {
     if ("room/elevator"->query_door() ||
 	"room/elevator"->query_level() != 3) {
@@ -73,7 +80,8 @@ int west()
     return 1;
 }
 
-int open(string str)
+int
+open(string str)
 {
     if (str != "door") {
 	return notify_fail("Open what?\n"), 0;
@@ -88,7 +96,8 @@ int open(string str)
     return 1;
 }
 
-int close(string str)
+int
+close(string str)
 {
     if (str != "door") {
 	return notify_fail("Close what?\n"), 0;
@@ -98,7 +107,8 @@ int close(string str)
     return 1;
 }
 
-int push(string str)
+int
+push(string str)
 {
     if (str && str != "button") {
 	return notify_fail(
@@ -114,13 +124,15 @@ int push(string str)
     return 1;
 }
 
-void elevator_arrives()
+void
+elevator_arrives()
 {
     say("The lamp on the button beside the elevator goes out.\n");
     lamp_is_lit = 0;
 }
 
-int prevent_look_at_inv(string str)
+int
+prevent_look_at_inv(string str)
 {
     return str != 0;
 }

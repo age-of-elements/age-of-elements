@@ -1,8 +1,12 @@
-inherit "/lib/room";
+#include <global.h>
+
+inherit LIB_ROOM;;
 
 string query_door_state();
 
-void create_room() {
+void
+create_room()
+{
     set_lumens(1);
 
     set_brief("Backroom of Bank");
@@ -21,7 +25,8 @@ void create_room() {
       ]) );
 }
 
-string query_door_state()
+string
+query_door_state()
 {
     if ("room/bank"->query_door()) {
 	return "The door is closed.";
@@ -30,7 +35,9 @@ string query_door_state()
     return "The door is open.";
 }
 
-int west() {
+int
+west()
+{
     if ("room/bank"->query_door()) {
 	write("The door is closed.\n");
 	return 1;
@@ -40,7 +47,9 @@ int west() {
     return 1;
 }
 
-int open(string str) {
+int
+open(string str)
+{
     if (!str) {
 	return notify_fail("Open what?\n"), 0;
     }

@@ -1,6 +1,7 @@
+#include <global.h>
 #include <mxp.h>
 
-inherit "/lib/room";
+inherit LIB_ROOM;
 
 /*
  * This is an elevator.
@@ -21,7 +22,9 @@ int delay_to_reset;	/* Move back to origin automatically after a delay. */
 string query_door_state();
 string query_button_state();
 
-void create_room() {
+void
+create_room()
+{
     level = 2;
     dest = 2;
     moving_time = 0;
@@ -48,7 +51,9 @@ void create_room() {
       ]) );
 }
 
-void reset_room() {
+void
+reset_room()
+{
     say("The door swings shut.\n");
     door_is_open = 0;
 }
@@ -56,12 +61,14 @@ void reset_room() {
 /*
  * Return true if closed door.
  */
-int query_door()
+int
+query_door()
 {
     return !door_is_open;
 }
 
-string query_door_state()
+string
+query_door_state()
 {
     if (door_is_open) {
 	return "The door is open to the east.";
@@ -70,7 +77,8 @@ string query_door_state()
     return "The door is closed to the east.";
 }
 
-string query_button_state()
+string
+query_button_state()
 {
     string ret = sprintf("On the wall are three buttons, numbered \
 %s1%s, %s2%s and %s3%s."
@@ -89,7 +97,9 @@ string query_button_state()
     return ret;
 }
 
-mixed query_description() {
+string
+query_description()
+{
     return sprintf("%s %s %s"
 	, ::query_description()
 	, funcall(#'query_door_state)
@@ -97,7 +107,8 @@ mixed query_description() {
       );
 }
 
-int press(string button)
+int
+press(string button)
 {
     string b;
 
@@ -153,7 +164,8 @@ int press(string button)
     return 1;
 }
 
-void heart_beat()
+void
+heart_beat()
 {
     if (time_to_close_door > 0) {
 	time_to_close_door -= 1;
@@ -188,7 +200,8 @@ void heart_beat()
     }
 }
 
-int open_door(string str)
+int
+open_door(string str)
 {
     if (str != "door") {
 	return notify_fail("Open what?\n"), 0;
@@ -213,7 +226,8 @@ int open_door(string str)
     return 1;
 }
 
-int close_door(string str)
+int
+close_door(string str)
 {
     if (str != "door") {
 	return notify_fail("Close what?\n"), 0;
@@ -233,7 +247,8 @@ int close_door(string str)
     return 1;
 }
 
-int go_east()
+int
+go_east()
 {
     if (moving_time > 0) {
 	write("You can't use the door  while the elevator is moving.\n");
@@ -256,7 +271,8 @@ int go_east()
     return 1;
 }
 
-int query_level()
+int
+query_level()
 {
     return level;
 }
@@ -264,7 +280,9 @@ int query_level()
 /*
  * This routine is called from various rooms that the elevator connects to.
  */
-int call_elevator(int button) {
+int
+call_elevator(int button)
+{
     if (door_is_open) {
 	return 0;
     }
@@ -303,7 +321,8 @@ int call_elevator(int button) {
 /*
  * Called by others to see if the elevator is moving
  */
-int is_moving()
+int
+is_moving()
 {
     if (level == dest) {
 	/* Still */
