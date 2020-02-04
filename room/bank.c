@@ -1,6 +1,6 @@
 #include <global.h>
 
-inherit LIB_ROOM;;
+inherit LIB_ROOM;
 
 int door_is_open = 0;
 int door_is_locked = 1;
