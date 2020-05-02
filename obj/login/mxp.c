@@ -74,7 +74,7 @@ init_mxp() {
     binary_message(({IAC, SB, TELOPT_MXP, IAC, SE}));
 
     // Switch to "permanent secure" mode, MXP tags now enabled
-    write(process_mxp(MXPMODE(6)));
+    write(process_mxp(MXPMODE(6), does_mxp));
 
     write(process_mxp(MXPTAG("!-- Set up MXP elements --"), does_mxp));
     write(process_mxp(MXPTAG("!ELEMENT RNum FLAG=\"RoomNum\" ATT=\"id\" EMPTY"), does_mxp));

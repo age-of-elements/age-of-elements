@@ -124,8 +124,8 @@ gmcp_input(int *optdata) {
 	gmcp_cache_filter(package, json_parse(value));
 
 	if (member(gmcp_cache, GMCP_PKG_CORE_SUPPORTS) > 0) {
-	    gmcp_output(GMCP_PKG_CLIENT_MEDIA, ([
-		GMCP_KEY_CLIENT_MEDIA_URL: GMCP_VALUE_CLIENT_MEDIA_URL_DEFAULT
+	    gmcp_output(GMCP_PKG_CLIENT_MEDIA_DEFAULT, ([
+		GMCP_KEY_CLIENT_MEDIA_URL: GMCP_VALUE_CLIENT_MEDIA_URL
 	      ]) );
 	}
 
@@ -256,7 +256,7 @@ gmcp_cache_filter(string package, mixed gmcp_value) {
 
 	case GMCP_PKG_CLIENT_GUI:
 	case GMCP_PKG_CLIENT_MAP:
-	case GMCP_PKG_CLIENT_MEDIA:
+	case GMCP_PKG_CLIENT_MEDIA_DEFAULT:
 	case GMCP_PKG_CLIENT_MEDIA_LOAD:
 	case GMCP_PKG_CLIENT_MEDIA_PLAY:
 	case GMCP_PKG_CLIENT_MEDIA_STOP:

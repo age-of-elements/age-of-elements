@@ -1,6 +1,6 @@
 #include <global.h>
 
-inherit LIB_ROOM;;
+inherit LIB_ROOM;
 
 string query_door_state();
 
