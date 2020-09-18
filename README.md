@@ -330,7 +330,7 @@ connect = 127.0.0.1:7680
 transparent = source
 ```
 #### Use systemd to automatically start stunnel at boot ####
-Create a unit file to define the systemd service with `sudo nano /etc/systemd/system/stunnel.service`, containing the following content:
+Create a unit file to define the systemd service with `sudo nano /etc/systemd/system/stunnel.service` (or `sudo systemctl start stunnel4.service` on Debian 10), containing the following content:
 ```
 [Unit]
 Description=Encryption wrapper service.
@@ -361,5 +361,5 @@ stunnel.service - Encryption wrapper service.
            ├─2744 /usr/bin/stunnel /etc/stunnel/stunnel.conf
            └─2745 /usr/bin/stunnel /etc/stunnel/stunnel.conf
 ```
-* Enable the service to start on reboot with `sudo systemctl enable stunnel`.
+* Enable the service to start on reboot with `sudo systemctl enable stunnel` (or `sudo systemctl enable stunnel4.service` on Debian 10).
 * Protect data in transit by deleting the TELNET rule from your Security Groups and using the TLS connection.
