@@ -328,6 +328,7 @@ key = /etc/letsencrypt/live/ageofelements.org/privkey.pem
 accept = 8680
 connect = 127.0.0.1:7680
 transparent = source
+TIMEOUTidle = 432000
 ```
 #### Use systemd to automatically start stunnel at boot ####
 Create a unit file to define the systemd service with `sudo nano /etc/systemd/system/stunnel.service` (or `sudo systemctl start stunnel4.service` on Debian 10), containing the following content:
