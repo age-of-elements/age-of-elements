@@ -323,7 +323,7 @@ sslVersion = TLSv1.2
 pid = /var/stunnel.pid
 
 [telnet]
-cert = /etc/letsencrypt/live/ageofelements.org/cert.pem
+cert = /etc/letsencrypt/live/ageofelements.org/fullchain.pem
 key = /etc/letsencrypt/live/ageofelements.org/privkey.pem
 accept = 8680
 connect = 127.0.0.1:7680
