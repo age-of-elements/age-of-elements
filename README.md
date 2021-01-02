@@ -300,7 +300,7 @@ Create a shell script that executes after reboot when stunnel starts to setup ip
 ```perl
 #!/bin/sh
 
-ipset create stunneled hash:ip,port -exist timeout 300
+ipset create stunneled hash:ip,port -exist timeout 7200
 iptables -t mangle -A PREROUTING -p tcp -m tcp --dport 8680 -j SET --add-set stunneled src,srcport
 iptables -t mangle -N DIVERT
 iptables -t mangle -A OUTPUT -p tcp -m set --match-set stunneled dst,dstport -m tcp --sport 7680 -j DIVERT
@@ -328,7 +328,7 @@ key = /etc/letsencrypt/live/ageofelements.org/privkey.pem
 accept = 8680
 connect = 127.0.0.1:7680
 transparent = source
-TIMEOUTidle = 432000
+TIMEOUTidle = 7200
 ```
 #### Use systemd to automatically start stunnel at boot ####
 Create a unit file to define the systemd service with `sudo nano /etc/systemd/system/stunnel.service` (or `sudo systemctl start stunnel4.service` on Debian 10), containing the following content:
@@ -362,5 +362,6 @@ stunnel.service - Encryption wrapper service.
            ├─2744 /usr/bin/stunnel /etc/stunnel/stunnel.conf
            └─2745 /usr/bin/stunnel /etc/stunnel/stunnel.conf
 ```
+* Test the connectivity with `openssl s_client <your host>:<your TLS port>` or with the Mudlet or Grapevine clients.
 * Enable the service to start on reboot with `sudo systemctl enable stunnel` (or `sudo systemctl enable stunnel4.service` on Debian 10).
 * Protect data in transit by deleting the TELNET rule from your Security Groups and using the TLS connection.
