@@ -189,17 +189,6 @@ cd ~/ldmud
 git checkout 3.6
 rm -rf .git
 ```
-##### Install python3 ####
-***Skip this python3 section for now - This is work-in-progress***
-* [Install Python 3.8](https://tecadmin.net/install-python-3-8-amazon-linux/)
-```
-export PYTHON_LIBS='-L/usr/local/lib/python3.8 -lpython3.8'
-export PYTHON_CFLAGS=-I/usr/local/include/python3.8
-mkdir ~/ldmud/python
-cd ~/ldmud/python
-sudo wget https://github.com/ldmud/ldmud/blob/master/doc/examples/python/startup.py
-chmod ug+x ~/ldmud/python/startup.py
-```
 #### Configure Your Game Driver Installation ####
 ```
 cd ~/ldmud/src
